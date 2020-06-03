@@ -33,40 +33,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Wybierz kategorie",style: Theme.of(context).textTheme.headline,),
-        backgroundColor: Colors.transparent,
+    return GridView.builder(
+      padding: const EdgeInsets.all(10.0),
+      itemCount: 9,
+      itemBuilder: (ctx, i) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+          gradient: LinearGradient(
+            colors: [
+              availableColors[i].withOpacity(0.4),
+              availableColors[i].withOpacity(0.6),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [0, 1],
+          ),
+        ),
+        child: Center(
+          child: Text(
+            categories[i],
+            style: Theme.of(context).textTheme.title,
+          ),
+        ),
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: 9,
-        itemBuilder: (ctx, i) => Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            gradient: LinearGradient(
-              colors: [
-                availableColors[i].withOpacity(0.4),
-                availableColors[i].withOpacity(0.6),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              stops: [0, 1],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              categories[i],
-              style: Theme.of(context).textTheme.title,
-            ),
-          ),
-        ),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 3 / 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-        ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 3 / 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
       ),
     );
   }
