@@ -5,13 +5,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Work with ChangeNotifier {
   int length = 0;
   Map<String, String> notice = {};
+  Map<String, String> choices = {};
   String _question = "", subcategory;
   List<String> _options = [];
-  String place,description,calendar;
+  String place,description,time;
   List<String> get options {
     return [..._options];
   }
 
+ void publish()async{
+    var prefs = await SharedPreferences.getInstance();
+    notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
+    Firestore.instance.collection("notices").add({"variety":choices, ...notice});
+  }
   String get question {
     return _question;
   }
@@ -28,16 +34,25 @@ class Work with ChangeNotifier {
     }
     notifyListeners();
   }
-  
-  void publish()async{
-    var prefs = await SharedPreferences.getInstance();
-    notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
-    Firestore.instance.collection("notices").add(notice);
-  }
-
-  List<String> getChoices() {
+  List<String> getNotice() {
     try {
       return notice[question].split(",");
+    } catch (error) {
+      return [];
+    }
+  }
+  
+  void setChoices(String key, String value) {
+    try {
+      choices.update(key, (val) => value);
+    } catch (e) {
+      choices.putIfAbsent(key, () => value);
+    }
+    notifyListeners();
+  }
+  List<String> getChoices() {
+    try {
+      return choices[question].split(",");
     } catch (error) {
       return [];
     }
@@ -81,13 +96,7 @@ class Work with ChangeNotifier {
         .get()
         .then((value) {
       if (!value.exists) {
-        _question = "Termin usługi";
-        _options = [
-          "W ciągu kilku dni",
-          "W ciągu 1-2 tygodni",
-          "Dostosuje się do wykonawcy",
-          "Dokładna data"
-        ];
+
       } else {
         var string = value.data.values;
         String val = string.toString().replaceAll("(", "");

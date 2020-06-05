@@ -23,6 +23,7 @@ class Notices with ChangeNotifier {
         _items.add(Notice(
           id: f.documentID,
           service: notice["service"],
+          variety: notice["variety"],
           description: notice["description"],
           files: notice["files"],
           place: notice["place"],

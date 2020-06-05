@@ -48,7 +48,7 @@ class _AutocompleteMapState extends State<AutocompleteMap> {
     Future.delayed(Duration(microseconds: 0)).then((value) async {
       Provider.of<Work>(context, listen: false).setQuestion("place");
       userLocation =
-          Provider.of<Work>(context, listen: false).getChoices().join(",");
+          Provider.of<Work>(context, listen: false).getNotice().join(",");
       if (userLocation == "") {
         _getUserLocation(null);
       }

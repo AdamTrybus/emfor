@@ -31,23 +31,18 @@ class _NoticeScreenState extends State<NoticeScreen> {
   Widget build(BuildContext context) {
     List<Notice> items = Provider.of<Notices>(context).items;
     print(items.length);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Ogłoszenia"),
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : GridView.builder(
-              padding: const EdgeInsets.all(10.0),
-              itemCount: items.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 1,
-                childAspectRatio: 3 / 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 30,
-              ),
-              itemBuilder: (ctx, i) => NoticeItem(items[i]),
+    return _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : GridView.builder(
+            padding: const EdgeInsets.all(10.0),
+            itemCount: items.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              childAspectRatio: 3 / 2,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 30,
             ),
-    );
+            itemBuilder: (ctx, i) => NoticeItem(items[i]),
+          );
   }
 }

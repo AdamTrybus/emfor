@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_emfor/widgets/autocomplete_map.dart';
 import 'package:new_emfor/widgets/description.dart';
+import 'package:new_emfor/widgets/time_picker.dart';
 import '../providers/work.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,7 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
       Provider.of<Work>(context, listen: false).setSubCollection(i);
     }
   }
+
   Widget checkbox(String title) {
     return Row(
       children: <Widget>[
@@ -33,11 +35,11 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
             if (value) {
               choices.add(title);
               Provider.of<Work>(context, listen: false)
-                  .setNotice(question, choices.join(","));
+                  .setChoices(question, choices.join(","));
             } else {
               choices.remove(title);
               Provider.of<Work>(context, listen: false)
-                  .setNotice(question, choices.join(","));
+                  .setChoices(question, choices.join(","));
             }
           },
         ),
@@ -48,8 +50,9 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
       ],
     );
   }
+
   Widget mainView() {
-    if (i < length - 1) {
+    if (i < length - 2) {
       return Column(
         children: [
           Container(
@@ -70,6 +73,8 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
           )
         ],
       );
+    } else if (i < length - 1) {
+      return TimePicker();
     } else if (i < length) {
       return Description();
     } else
@@ -104,21 +109,21 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
                   child: Text("Cofnij"),
                 ),
                 RaisedButton(
-                  onPressed: choices.length == 0 && i <length -1
+                  onPressed: choices.length == 0 && i < length - 2
                       ? null
                       : () async {
-                          i +=1;//ustawiamy od razu dla nastepny widok
+                          i += 1; //ustawiamy od razu dla nastepny widok
                           Provider.of<Work>(context, listen: false)
                               .setSubCollection(i);
-                          if (i < length - 1) {
+                          if (i < length - 2) {
                             Provider.of<Work>(context, listen: false)
-                                .setNotice(question, choices.join(","));
+                                .setChoices(question, choices.join(","));
                             choices = [];
-                          }else if(i==length+1){//sprawdzamy czy to koniec
-                            i=1;
-                            Provider.of<Work>(context, listen: false)
-                                .publish();
-                          }
+                          } else if (i == length + 1) {
+                            //sprawdzamy czy to koniec
+                            Provider.of<Work>(context, listen: false).publish();
+                            Navigator.of(context).pushReplacementNamed("/");
+                          } else {}
                         },
                   child: Text(i == length ? "Zakończ" : "Dalej"),
                 ),

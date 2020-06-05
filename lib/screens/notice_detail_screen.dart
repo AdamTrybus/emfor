@@ -1,3 +1,4 @@
+import 'package:new_emfor/widgets/price_sheet.dart';
 import 'package:provider/provider.dart';
 import '../providers/notice.dart';
 import 'package:flutter/material.dart';
@@ -5,12 +6,38 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class NoticeDetailScreen extends StatelessWidget {
   static const routeName = '/notice_detail-screen';
+  Notice notice;
+  Widget varieties() {
+    var variety = notice.variety;
+    var keys = variety.keys.toList();
+    var values = variety.values.toList();
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: keys.length,
+      itemBuilder: (ctx, i) => Column(
+        children: [
+          Text(
+            keys[i],
+            style: Theme.of(ctx).textTheme.subhead,
+          ),
+          SizedBox(
+            height: 2,
+          ),
+          Text(
+            values[i],
+            style: Theme.of(ctx).textTheme.title,
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height * 0.3 > 190.0
-        ? MediaQuery.of(context).size.height * 0.3
-        : 200.0;
-    Notice notice = ModalRoute.of(context).settings.arguments;
+    var height = MediaQuery.of(context).size.height * 0.45 > 280.0
+        ? MediaQuery.of(context).size.height * 0.45
+        : 280.0;
+    notice = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Stack(
         children: [
@@ -39,41 +66,50 @@ class NoticeDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "Pralka nie działa",
-                        //notice.title,
+                        notice.service,
                         style: TextStyle(fontFamily: "Quicksand", fontSize: 22),
                       ),
                       SizedBox(
                         height: 5,
                       ),
                       Text(
-                        "79.99",
-                        //notice.price.toStringAsFixed(2),
+                        notice.place,
                         style: TextStyle(
                             fontFamily: "OpenSans",
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
+                      varieties(),
                       SizedBox(
-                        height: 8,
+                        height: 6,
                       ),
                       Text(
-                        "Nie działa mi pralka, proszę o pomoc",
-                        //notice.description,
+                        notice.description,
                         style: TextStyle(
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.w300,
-                            fontSize: 14),
+                            fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
                       Expanded(child: SizedBox()),
                       FlatButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showModalBottomSheet(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(25.0))),
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (ctx) {
+                                return PriceSheet(notice);
+                              },
+                            );
+                          },
                           child: Text(
-                            "Wybierz termin spotkania",
+                            "Wyceń usługę",
                             style: TextStyle(
                               color: Colors.amber[700],
-                              fontSize: 16,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           )),

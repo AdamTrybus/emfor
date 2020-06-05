@@ -36,6 +36,7 @@ dependencies:
   intl_phone_number_input: ^0.4.4
   pin_code_fields: ^3.0.0
   shared_preferences: ^0.5.7+1
+  cloud_functions: ^0.5.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -74,6 +75,7 @@ flutter:
   # example:
   assets:
     - assets/avatar.png
+    - assets/emfor_logo.png
   fonts:
     - family: Lato
       fonts:

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/notices.dart';
 import 'package:new_emfor/screens/category_screen.dart';
+import 'package:new_emfor/screens/notice_detail_screen.dart';
 import 'package:new_emfor/screens/notice_screen.dart';
+import 'package:new_emfor/screens/overview_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/home_screen.dart';
 import './screens/subcategory_screen.dart';
@@ -65,6 +67,11 @@ class MyApp extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),
+                subhead: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: "Lato"
+                ),
               ),
         ),
         home: FutureBuilder<SharedPreferences>(
@@ -77,7 +84,7 @@ class MyApp extends StatelessWidget {
                 return CircularProgressIndicator();
               default:
                 return snapshot.data.getString("phone") != null
-                    ? CategoryScreen()
+                    ? OverviewScreen()
                     : AuthScreen();
             }
           },
@@ -86,6 +93,8 @@ class MyApp extends StatelessWidget {
           SubcategoryScreen.routeName: (ctx) => SubcategoryScreen(),
           PersonalInfo.routeName: (ctx) => PersonalInfo(),
           CodeInput.routeName: (ctx) => CodeInput(),
+          NoticeScreen.routeName: (ctx) => NoticeScreen(),
+          NoticeDetailScreen.routeName: (ctx) => NoticeDetailScreen(),
         },
       ),
     );

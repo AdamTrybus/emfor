@@ -8,49 +8,32 @@ class NoticeItem extends StatelessWidget {
   NoticeItem(this.notice);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 5,
-            blurRadius: 10,
-            offset: Offset(0, 3), // changes position of shadow
+    return Column(
+      children: [
+        ListTile(
+          leading: CircleAvatar(
+            child: Image.asset("assets/emfor_logo.png",scale: 60,),
           ),
-        ],
-      ),
-      child: GridTile(
-        child: GoogleMap(
-          mapType: MapType.normal,
-          zoomControlsEnabled: false,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(52.237049, 21.017532),
-            zoom: 16,
-          ),
-        ),
-        footer: GridTileBar(
-          backgroundColor: Color.fromRGBO(245, 247, 250, 1),
           title: Text(
-            "Nie działa pralka",
-            //notice.title,
+            notice.service,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black,
-              fontSize: 16,
+              fontSize: 18,
               fontFamily: "OpenSans",
             ),
           ),
-          leading: Text(
-            "79.99",
-            //notice.price.toStringAsFixed(2),
+          subtitle: Text(
+            notice.place,
             style: TextStyle(
               fontFamily: "Lato",
-              fontSize: 14,
+              fontSize: 12,
             ),
           ),
           trailing: RaisedButton(
             onPressed: () {
-              Navigator.of(context).pushNamed(NoticeDetailScreen.routeName, arguments: notice);
+              Navigator.of(context)
+                  .pushNamed(NoticeDetailScreen.routeName, arguments: notice);
             },
             child: Text(
               "szczegóły",
@@ -65,7 +48,8 @@ class NoticeItem extends StatelessWidget {
             ),
           ),
         ),
-      ),
+        Divider(indent: 8,endIndent: 8,thickness: 2,),
+      ],
     );
   }
 }

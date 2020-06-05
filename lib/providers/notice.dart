@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 class Notice {
   final String id;
   final String service;
+  final variety;
   final String description;
   final String files;
   final String time;
@@ -12,6 +13,7 @@ class Notice {
   Notice({
     @required this.id,
     @required this.service,
+    @required this.variety,
     @required this.description,
     @required this.time,
     @required this.files,
