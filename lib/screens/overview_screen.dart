@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:new_emfor/screens/chat_screen.dart';
-import 'package:new_emfor/screens/home_screen.dart';
-import 'package:new_emfor/screens/notice_screen.dart';
-import 'package:new_emfor/screens/settings_screen.dart';
+import '../screens/my_notices_screen.dart';
+import '../screens/home_screen.dart';
+import '../screens/notice_screen.dart';
+import '../screens/settings_screen.dart';
 
 class OverviewScreen extends StatefulWidget {
   @override
@@ -20,7 +20,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
       'title': 'Ogłoszenia',
     },
     {
-      'page': ChatScreen(),
+      'page': MyNoticesScreen(),
       'title': 'Czat',
     },
     {
