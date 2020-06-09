@@ -13,18 +13,17 @@ class NoticeScreen extends StatefulWidget {
 }
 
 class _NoticeScreenState extends State<NoticeScreen> {
-  bool _isInit = true, _isLoading = true;
+  bool _isLoading = true;
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isInit) {
-      Provider.of<Notices>(context).fetchAndSetItems().then((_) {
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(microseconds: 0)).then((value) {
+      Provider.of<Notices>(context,listen: false).fetchAndSetItems().then((_) {
         setState(() {
           _isLoading = false;
         });
       });
-    }
-    _isInit = false;
+    });
   }
 
   @override
@@ -33,15 +32,10 @@ class _NoticeScreenState extends State<NoticeScreen> {
     print(items.length);
     return _isLoading
         ? Center(child: CircularProgressIndicator())
-        : GridView.builder(
+        : ListView.builder(
             padding: const EdgeInsets.all(10.0),
             itemCount: items.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              childAspectRatio: 3 / 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 30,
-            ),
+            shrinkWrap: true,
             itemBuilder: (ctx, i) => NoticeItem(items[i]),
           );
   }

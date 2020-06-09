@@ -5,6 +5,7 @@ import 'package:new_emfor/screens/subcategory_screen.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
+  static const String routeName = "/category-screen";
   @override
   _CategoryScreenState createState() => _CategoryScreenState();
 }

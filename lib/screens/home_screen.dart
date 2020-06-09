@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:new_emfor/screens/category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -36,23 +37,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return GridView.builder(
       padding: const EdgeInsets.all(10.0),
       itemCount: 9,
-      itemBuilder: (ctx, i) => Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-          gradient: LinearGradient(
-            colors: [
-              availableColors[i].withOpacity(0.4),
-              availableColors[i].withOpacity(0.6),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: [0, 1],
+      itemBuilder: (ctx, i) => InkWell(
+        onTap: ()=>Navigator.of(context).pushNamed(CategoryScreen.routeName),
+              child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+            gradient: LinearGradient(
+              colors: [
+                availableColors[i].withOpacity(0.4),
+                availableColors[i].withOpacity(0.6),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              stops: [0, 1],
+            ),
           ),
-        ),
-        child: Center(
-          child: Text(
-            categories[i],
-            style: Theme.of(context).textTheme.title,
+          child: Center(
+            child: Text(
+              categories[i],
+              style: Theme.of(context).textTheme.title,
+            ),
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Work with ChangeNotifier {
@@ -8,16 +9,22 @@ class Work with ChangeNotifier {
   Map<String, String> choices = {};
   String _question = "", subcategory;
   List<String> _options = [];
-  String place,description,time;
+  String place, description, time;
   List<String> get options {
     return [..._options];
   }
 
- void publish()async{
+  void publish() async {
     var prefs = await SharedPreferences.getInstance();
+    DateTime now = DateTime.now();
+    var dateString = DateFormat.yMMMMd().format(now);
+    notice.putIfAbsent("dateOfIssue", () => dateString);
     notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
-    Firestore.instance.collection("notices").add({"variety":choices, ...notice});
+    Firestore.instance
+        .collection("notices")
+        .add({"variety": choices, ...notice});
   }
+
   String get question {
     return _question;
   }
@@ -34,6 +41,7 @@ class Work with ChangeNotifier {
     }
     notifyListeners();
   }
+
   List<String> getNotice() {
     try {
       return notice[question].split(",");
@@ -41,7 +49,7 @@ class Work with ChangeNotifier {
       return [];
     }
   }
-  
+
   void setChoices(String key, String value) {
     try {
       choices.update(key, (val) => value);
@@ -50,6 +58,7 @@ class Work with ChangeNotifier {
     }
     notifyListeners();
   }
+
   List<String> getChoices() {
     try {
       return choices[question].split(",");
@@ -57,7 +66,8 @@ class Work with ChangeNotifier {
       return [];
     }
   }
-  void setQuestion(String question){
+
+  void setQuestion(String question) {
     _question = question;
   }
 
@@ -96,7 +106,6 @@ class Work with ChangeNotifier {
         .get()
         .then((value) {
       if (!value.exists) {
-
       } else {
         var string = value.data.values;
         String val = string.toString().replaceAll("(", "");

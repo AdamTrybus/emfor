@@ -1,6 +1,5 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/notice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +12,7 @@ class PriceSheet extends StatefulWidget {
   _PriceSheetState createState() => _PriceSheetState();
 }
 
-class _PriceSheetState extends State<PriceSheet> {
+class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
   var controller = TextEditingController();
   bool validate = false;
   void _submitData() async {
@@ -31,11 +30,19 @@ class _PriceSheetState extends State<PriceSheet> {
       return;
     }
     var prefs = await SharedPreferences.getInstance();
-     Firestore.instance
-        .collection("notice-realization")
+    Notice notice = widget.notice;
+    Firestore.instance
+        .collection("notices")
         .document(widget.notice.id)
-        .setData({
-      prefs.getString("phone"): controller.text.trim(),
+        .updateData({
+      "interests": notice.interests.toString().isNotEmpty
+          ? {
+              ...notice.interests,
+              prefs.getString("phone"): controller.text.trim(),
+            }
+          : {
+              prefs.getString("phone"): controller.text.trim(),
+            },
     });
     Navigator.of(context).pushReplacementNamed("/");
   }
@@ -44,8 +51,6 @@ class _PriceSheetState extends State<PriceSheet> {
   Widget build(BuildContext context) {
     return Form(
       child: Container(
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -68,8 +73,15 @@ class _PriceSheetState extends State<PriceSheet> {
                 controller: controller,
               ),
             ),
-            SizedBox(
-              height: 25,
+            AnimatedSize(
+              vsync: this,
+              duration: Duration(milliseconds: 100),
+              curve: Curves.fastOutSlowIn,
+              child: SizedBox(
+                height: 25 > MediaQuery.of(context).viewInsets.bottom
+                    ? 25
+                    : MediaQuery.of(context).viewInsets.bottom,
+              ),
             ),
             SizedBox(
               width: 200,

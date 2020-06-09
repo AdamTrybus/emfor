@@ -9,6 +9,8 @@ class Notice {
   final String time;
   final String place;
   final String userPhone;
+  final String dateOfIssue;
+  final interests;
 
   Notice({
     @required this.id,
@@ -19,5 +21,7 @@ class Notice {
     @required this.files,
     @required this.place,
     @required this.userPhone,
+    @required this.dateOfIssue,
+    @required this.interests,
   });
 }

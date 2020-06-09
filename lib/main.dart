@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/notices.dart';
 import 'package:new_emfor/screens/category_screen.dart';
+import 'package:new_emfor/screens/chat_detail_screen.dart';
+import 'package:new_emfor/screens/my_notices_detail_screen.dart';
 import 'package:new_emfor/screens/notice_detail_screen.dart';
 import 'package:new_emfor/screens/notice_screen.dart';
 import 'package:new_emfor/screens/overview_screen.dart';
 import './screens/auth_screen.dart';
-import './screens/home_screen.dart';
 import './screens/subcategory_screen.dart';
 import './widgets/code_input.dart';
 import './widgets/personal_info.dart';
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
                 headline: TextStyle(
                   fontFamily: 'OpenSans',
                   color: Colors.deepPurple[800],
-                  fontSize: 36,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),
                 subtitle: TextStyle(
@@ -68,9 +69,13 @@ class MyApp extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                 ),
                 subhead: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Lato"
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: "Lato"),
+                body1: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purple[700],
                 ),
               ),
         ),
@@ -84,17 +89,20 @@ class MyApp extends StatelessWidget {
                 return CircularProgressIndicator();
               default:
                 return snapshot.data.getString("phone") != null
-                    ? OverviewScreen()
+                    ? AuthScreen()
                     : AuthScreen();
             }
           },
         ),
         routes: {
+          CategoryScreen.routeName: (ctx) => CategoryScreen(),
           SubcategoryScreen.routeName: (ctx) => SubcategoryScreen(),
           PersonalInfo.routeName: (ctx) => PersonalInfo(),
           CodeInput.routeName: (ctx) => CodeInput(),
           NoticeScreen.routeName: (ctx) => NoticeScreen(),
           NoticeDetailScreen.routeName: (ctx) => NoticeDetailScreen(),
+          MyNoticesDetailScreen.routeName: (ctx) => MyNoticesDetailScreen(),
+          ChatScreenDetail.routeName: (ctx) => ChatScreenDetail(),
         },
       ),
     );

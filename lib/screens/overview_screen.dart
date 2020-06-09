@@ -21,7 +21,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
     },
     {
       'page': MyNoticesScreen(),
-      'title': 'Czat',
+      'title': 'Moje ogłoszenia',
     },
     {
       'page': SettingsScreen(),
@@ -77,11 +77,11 @@ class _OverviewScreenState extends State<OverviewScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.chat,
+              Icons.event_available,
             ),
             title: FittedBox(
               child: Text(
-                "Czat",
+                "Moje Ogłoszenia",
               ),
             ),
           ),

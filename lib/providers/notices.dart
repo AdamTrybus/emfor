@@ -24,14 +24,48 @@ class Notices with ChangeNotifier {
           id: f.documentID,
           service: notice["service"],
           variety: notice["variety"],
-          description: notice["description"],
+          description: notice["description"] ?? "",
           files: notice["files"],
           place: notice["place"],
           time: notice["time"],
           userPhone: notice["userPhone"],
+          dateOfIssue: notice["dateOfIssue"],
+          interests: notice["interests"],
         ));
       });
     });
     notifyListeners();
+  }
+
+  Future<void> fetchAndSetBid() async {
+    _items = [];
+    var prefs = await SharedPreferences.getInstance();
+    String phone = prefs.getString("phone");
+    final databaseReference = Firestore.instance;
+    await databaseReference
+        .collection("notices")
+        .where("userPhone", isEqualTo: phone)
+        .getDocuments()
+        .then((QuerySnapshot snapshot) {
+      snapshot.documents.forEach((f) {
+        dynamic notice = f.data;
+        if (notice["userPhone"] == phone) {
+          print(phone);
+        }
+        _items.add(Notice(
+          id: f.documentID,
+          service: notice["service"],
+          variety: notice["variety"],
+          description: notice["description"] ?? "",
+          files: notice["files"],
+          place: notice["place"],
+          time: notice["time"],
+          userPhone: notice["userPhone"],
+          dateOfIssue: notice["dateOfIssue"],
+          interests: notice["interests"],
+        ));
+      });
+      notifyListeners();
+    });
   }
 }

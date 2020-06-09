@@ -122,6 +122,7 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
                           } else if (i == length + 1) {
                             //sprawdzamy czy to koniec
                             Provider.of<Work>(context, listen: false).publish();
+                            Navigator.of(context).popUntil((route) => route.isFirst);
                             Navigator.of(context).pushReplacementNamed("/");
                           } else {}
                         },
