@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import './personal_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,10 +28,25 @@ class _CodeInputState extends State<CodeInput> {
     try {
       firebaseAuth.signInWithCredential(authCredential).catchError((e) {
         onFailed();
-      }).then((user) {
+      }).then((user) async {
         if (user.user != null) {
-          Navigator.of(context)
-              .pushNamed(PersonalInfo.routeName, arguments: phone);
+          Firestore.instance
+              .collection("users")
+              .document(phone)
+              .get()
+              .then((value)async {
+            if (value.exists) {
+              var prefs = await SharedPreferences.getInstance();
+              prefs.setString("phone", phone);
+              prefs.setString("gmail", value.data["gmail"]);
+              prefs.setString("name", value.data["name"]);
+              prefs.setString("imageUrl", value.data["imageUrl"]);
+              Navigator.of(context).pushNamed("/");
+            } else {
+              Navigator.of(context)
+                  .pushNamed(PersonalInfo.routeName, arguments: phone);
+            }
+          });
         } else {
           onFailed();
         }

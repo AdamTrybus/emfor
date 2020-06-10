@@ -39,9 +39,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_pages[_selectedPageIndex]['title']),
-      ),
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
@@ -51,7 +48,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
         iconSize: 28,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.black,        
+        selectedItemColor: Colors.black,
         unselectedLabelStyle: Theme.of(context).textTheme.subtitle,
         selectedLabelStyle: Theme.of(context).textTheme.subtitle,
         items: [

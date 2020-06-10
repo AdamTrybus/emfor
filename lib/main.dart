@@ -6,6 +6,7 @@ import 'package:new_emfor/screens/my_notices_detail_screen.dart';
 import 'package:new_emfor/screens/notice_detail_screen.dart';
 import 'package:new_emfor/screens/notice_screen.dart';
 import 'package:new_emfor/screens/overview_screen.dart';
+import 'package:new_emfor/widgets/change_profile.dart';
 import './screens/auth_screen.dart';
 import './screens/subcategory_screen.dart';
 import './widgets/code_input.dart';
@@ -89,7 +90,7 @@ class MyApp extends StatelessWidget {
                 return CircularProgressIndicator();
               default:
                 return snapshot.data.getString("phone") != null
-                    ? AuthScreen()
+                    ? OverviewScreen()
                     : AuthScreen();
             }
           },
@@ -103,6 +104,7 @@ class MyApp extends StatelessWidget {
           NoticeDetailScreen.routeName: (ctx) => NoticeDetailScreen(),
           MyNoticesDetailScreen.routeName: (ctx) => MyNoticesDetailScreen(),
           ChatScreenDetail.routeName: (ctx) => ChatScreenDetail(),
+          ChangeProfile.routeName: (ctx) => ChangeProfile(),
         },
       ),
     );

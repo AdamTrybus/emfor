@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserImagePicker extends StatefulWidget {
-  UserImagePicker(this.imagePickFn);
+  UserImagePicker(this.imagePickFn, [this.image]);
 
   final void Function(File pickedImage) imagePickFn;
+  final File image;
 
   @override
   _UserImagePickerState createState() => _UserImagePickerState();
@@ -24,13 +25,20 @@ class _UserImagePickerState extends State<UserImagePicker> {
   }
 
   @override
+  void initState() {
+    super.initState();
+      _pickedImage = widget.image;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        CircleAvatar(
-          radius: 40,
-          backgroundColor: Colors.grey,
-          backgroundImage: _pickedImage != null
+        Image(
+          fit: BoxFit.cover,
+          height: 100,
+          width: 100,
+          image: _pickedImage != null
               ? FileImage(_pickedImage)
               : AssetImage("assets/avatar.png"),
         ),
