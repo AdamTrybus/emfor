@@ -33,9 +33,9 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
     Notice notice = widget.notice;
     Firestore.instance
         .collection("notices")
-        .document(widget.notice.id)
+        .document(notice.id)
         .updateData({
-      "interests": notice.interests.toString().isNotEmpty
+      "interests": notice.interests !=null
           ? {
               ...notice.interests,
               prefs.getString("phone"): controller.text.trim(),

@@ -34,7 +34,7 @@ class NoticeDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height * 0.45 > 280.0
-        ? MediaQuery.of(context).size.height * 0.45
+        ? MediaQuery.of(context).size.height * 0.55
         : 280.0;
     notice = ModalRoute.of(context).settings.arguments;
     return Scaffold(
@@ -66,7 +66,7 @@ class NoticeDetailScreen extends StatelessWidget {
                     children: [
                       Text(
                         notice.service,
-                        style: TextStyle(fontFamily: "Quicksand", fontSize: 22),
+                        style: TextStyle(fontFamily: "Quicksand", fontSize: 20),
                       ),
                       SizedBox(
                         height: 5,
@@ -76,9 +76,8 @@ class NoticeDetailScreen extends StatelessWidget {
                         style: TextStyle(
                             fontFamily: "OpenSans",
                             fontWeight: FontWeight.bold,
-                            fontSize: 18),
+                            fontSize: 16),
                       ),
-                      varieties(),
                       SizedBox(
                         height: 6,
                       ),
@@ -90,7 +89,10 @@ class NoticeDetailScreen extends StatelessWidget {
                             fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
-                      Expanded(child: SizedBox()),
+                      SizedBox(
+                        height: 3,
+                      ),
+                      Expanded(child: varieties()),
                       FlatButton(
                           onPressed: () {
                             showModalBottomSheet(

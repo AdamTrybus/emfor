@@ -77,8 +77,8 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
           : FutureBuilder(
               future: Firestore.instance
                   .collection("chat")
-                  .where("principal", isEqualTo: userPhone)
-                  .where("expert", isEqualTo: expertPhone)
+                  .where("phones", arrayContains: userPhone)
+                  .where("phones", arrayContains: expertPhone)
                   .getDocuments(),
               builder: (ctx, futureSnapshot) {
                 if (futureSnapshot.connectionState == ConnectionState.waiting) {

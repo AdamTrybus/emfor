@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 import './personal_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import '../widgets/button.dart';
 
 class CodeInput extends StatefulWidget {
   static const routeName = "/code-input";
@@ -14,10 +16,15 @@ class CodeInput extends StatefulWidget {
 
 class _CodeInputState extends State<CodeInput> {
   String verificationId, code, phone;
-  bool firstBuild = true, loading = false;
+  bool firstBuild = true, loading = false, login;
   var firebaseAuth = FirebaseAuth.instance;
 
   void onFailed() {
+    Toast.show(
+      "Błąd",
+      context,
+      duration: Toast.LENGTH_SHORT,
+    );
     Navigator.of(context).pop();
     setState(() {
       loading = false;
@@ -34,8 +41,8 @@ class _CodeInputState extends State<CodeInput> {
               .collection("users")
               .document(phone)
               .get()
-              .then((value)async {
-            if (value.exists) {
+              .then((value) async {
+            if (value.exists && login) {
               var prefs = await SharedPreferences.getInstance();
               prefs.setString("phone", phone);
               prefs.setString("gmail", value.data["gmail"]);
@@ -43,8 +50,17 @@ class _CodeInputState extends State<CodeInput> {
               prefs.setString("imageUrl", value.data["imageUrl"]);
               Navigator.of(context).pushNamed("/");
             } else {
-              Navigator.of(context)
-                  .pushNamed(PersonalInfo.routeName, arguments: phone);
+              if (login) {
+                Toast.show(
+                  "Załóż najpierw konto",
+                  context,
+                  duration: Toast.LENGTH_LONG,
+                );
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              } else {
+                Navigator.of(context)
+                    .pushNamed(PersonalInfo.routeName, arguments: phone);
+              }
             }
           });
         } else {
@@ -68,7 +84,6 @@ class _CodeInputState extends State<CodeInput> {
 
     final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
       verificationId = verId;
-      print(forceResend);
       setState(() {
         loading = false;
       });
@@ -95,16 +110,16 @@ class _CodeInputState extends State<CodeInput> {
 
   @override
   Widget build(BuildContext context) {
-    phone = ModalRoute.of(context).settings.arguments;
+    var map = ModalRoute.of(context).settings.arguments as Map<String, Object>;
+    phone = map["phone"];
+    login = map["login"];
     if (firstBuild) {
       loading = true;
       firstBuild = false;
       verifyPhone(phone);
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Phone verification"),
-      ),
+      resizeToAvoidBottomPadding: true,
       body: loading
           ? Center(
               child: CircularProgressIndicator(),
@@ -114,9 +129,10 @@ class _CodeInputState extends State<CodeInput> {
                 SizedBox(
                   height: 25,
                 ),
-                Text("Wprowadź kod",
-                    style:
-                        TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+                Text(
+                  "Wprowadź kod",
+                  style: Theme.of(context).textTheme.display1,
+                ),
                 SizedBox(
                   height: 6,
                 ),
@@ -128,10 +144,14 @@ class _CodeInputState extends State<CodeInput> {
                       color: Colors.black,
                     ),
                     children: <TextSpan>[
-                      TextSpan(text: "Kod został wysłany do "),
                       TextSpan(
-                          text: phone,
-                          style: TextStyle(fontWeight: FontWeight.w500)),
+                        text: "Kod został wysłany do ",
+                        style: Theme.of(context).textTheme.subtitle,
+                      ),
+                      TextSpan(
+                        text: phone,
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
                     ],
                   ),
                 ),
@@ -165,28 +185,10 @@ class _CodeInputState extends State<CodeInput> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     )),
                 Expanded(child: SizedBox()),
-                Container(
-                  width: 200,
-                  child: RaisedButton(
-                    onPressed: () {
-                      _signInWithPhoneNumber(code);
-                    },
-                    color: Colors.amber[500],
-                    elevation: 6,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(26),
-                      borderSide:
-                          BorderSide(width: 1, color: Colors.amber[500]),
-                    ),
-                    child: Text(
-                      "Dalej",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
+                MyButton(
+                  onPressed: () {
+                    _signInWithPhoneNumber(code);
+                  },
                 ),
                 SizedBox(
                   height: 15,

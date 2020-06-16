@@ -10,6 +10,7 @@ class Notices with ChangeNotifier {
   }
 
   Future<void> fetchAndSetItems() async {
+    _items =[];
     var prefs = await SharedPreferences.getInstance();
     String phone = prefs.getString("phone");
     final databaseReference = Firestore.instance;

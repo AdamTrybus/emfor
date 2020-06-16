@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/screens/chat_screen.dart';
 import '../screens/my_notices_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/notice_screen.dart';
@@ -22,6 +23,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
     {
       'page': MyNoticesScreen(),
       'title': 'Moje ogłoszenia',
+    },
+    {
+      'page': ChatScreen(),
+      'title': 'Czat',
     },
     {
       'page': SettingsScreen(),
@@ -79,6 +84,16 @@ class _OverviewScreenState extends State<OverviewScreen> {
             title: FittedBox(
               child: Text(
                 "Moje Ogłoszenia",
+              ),
+            ),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.chat,
+            ),
+            title: FittedBox(
+              child: Text(
+                "Czat",
               ),
             ),
           ),

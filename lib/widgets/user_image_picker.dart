@@ -27,26 +27,26 @@ class _UserImagePickerState extends State<UserImagePicker> {
   @override
   void initState() {
     super.initState();
-      _pickedImage = widget.image;
+    _pickedImage = widget.image;
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Image(
-          fit: BoxFit.cover,
-          height: 100,
-          width: 100,
-          image: _pickedImage != null
-              ? FileImage(_pickedImage)
-              : AssetImage("assets/avatar.png"),
-        ),
-        FlatButton.icon(
-          textColor: Theme.of(context).primaryColor,
-          onPressed: _pickImage,
-          icon: Icon(Icons.image),
-          label: Text('Dodaj zdjęcie !'),
+        InkWell(
+          onTap: _pickImage,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image(
+              fit: BoxFit.cover,
+              height: 130,
+              width: 130,
+              image: _pickedImage != null
+                  ? FileImage(_pickedImage)
+                  : AssetImage("assets/user_image.png"),
+            ),
+          ),
         ),
       ],
     );

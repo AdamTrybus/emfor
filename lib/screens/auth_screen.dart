@@ -1,6 +1,6 @@
-import '../widgets/code_input.dart';
 import 'package:flutter/material.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:new_emfor/screens/phone_verification.dart';
+import '../widgets/button.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -8,92 +8,69 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  String numer = "", errorMessage = "";
-  bool validate, submitted = false;
+  Widget button(String text, Color textColor, Color backgroundColor) {
+    return Container(
+      height: 75,
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 25),
+      child: RaisedButton(
+        onPressed: () {},
+        color: backgroundColor,
+        elevation: 4,
+        child: Text(
+          text,
+          style: TextStyle(
+            fontFamily: "Gotham",
+            color: textColor,
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Phone verification"),
-      ),
       body: Column(
         children: [
-          SizedBox(
-            height: 25,
-          ),
-          Text(
-            "Wprowadź numer telefonu",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-          ),
-          SizedBox(
-            height: 6,
-          ),
-          Text(
-            "Kod zostanie wysłany w celu zweryfikowania autentycznośc twojego numeru telefonu",
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: InternationalPhoneNumberInput(
-              focusNode: FocusNode(canRequestFocus: true),
-              inputDecoration: InputDecoration(
-                errorText: submitted ? "Nieprawidłowy numer telefonu" : null,
-                fillColor: Colors.grey[200],
-                filled: true,
+          Container(
+            height: height * 0.65,
+            padding: EdgeInsets.all(20),
+            width: double.infinity,
+            color: Colors.black,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Text(
+                "Emfor",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Quicksand",
+                    fontWeight: FontWeight.w600),
               ),
-              textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-              onInputChanged: (PhoneNumber number) {
-                numer = number.phoneNumber;
-              },
-              onInputValidated: (bool value) {
-                validate = value;
-              },
-              ignoreBlank: false,
-              autoValidate: false,
-              selectorType: PhoneInputSelectorType.DIALOG,
-              initialValue: PhoneNumber(isoCode: 'PL'),
-              searchBoxDecoration:
-                  InputDecoration(hintText: "Szukaj według nazwy kraju"),
             ),
           ),
           Expanded(child: SizedBox()),
-          Container(
-            width: 200,
-            child: RaisedButton(
-              onPressed: () {
-                if (numer.isEmpty || !validate) {
-                  setState(() {
-                    submitted = true;
-                  });
-                } else {
-                  submitted = false;
-                  Navigator.of(context)
-                      .pushNamed(CodeInput.routeName, arguments: numer);
-                }
-              },
-              color: Colors.amber[500],
-              elevation: 6,
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(26),
-                borderSide: BorderSide(width: 1, color: Colors.amber[500]),
-              ),
-              child: Text(
-                "Dalej",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
+          MyButton(
+            text: "Zaloguj",
+            onPressed: () {
+              Navigator.of(context).pushNamed(PhoneVerification.routeName,arguments: true);
+            },
           ),
           SizedBox(
-            height: 15,
+            height: 20,
           ),
+          MyButton(
+            text: "Rejestracja",
+            textColor: Colors.black,
+            backgroundColor: Colors.grey[50],
+            onPressed: () {
+              Navigator.of(context).pushNamed(PhoneVerification.routeName,arguments: false);
+            },
+          ),
+          Expanded(child: SizedBox()),
         ],
       ),
     );

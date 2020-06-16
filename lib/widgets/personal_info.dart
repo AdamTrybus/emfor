@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:toast/toast.dart';
 import '../widgets/files_picker.dart';
 import './user_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
+import '../widgets/button.dart';
 
 class PersonalInfo extends StatefulWidget {
   static const routeName = "/personal-info";
@@ -16,7 +18,8 @@ class PersonalInfo extends StatefulWidget {
   _PersonalInfoState createState() => _PersonalInfoState();
 }
 
-class _PersonalInfoState extends State<PersonalInfo> {
+class _PersonalInfoState extends State<PersonalInfo>
+    with TickerProviderStateMixin {
   String gmail, name, description, category;
   File imageFile;
   List<File> files;
@@ -24,6 +27,20 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final _form = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _gmailFocusNode = FocusNode();
+  List _categories = [
+    "Sprzątanie",
+    "Montaż i naprawa",
+    "Ogród",
+    "Hydraulik",
+    "Elektryk",
+  ];
+  TabController _tabController;
+
+  @override
+  void initState() {
+    _tabController = new TabController(length: 2, vsync: this);
+    super.initState();
+  }
 
   void _saveForm(BuildContext context) async {
     final isValid = _form.currentState.validate();
@@ -33,13 +50,11 @@ class _PersonalInfoState extends State<PersonalInfo> {
     }
     _form.currentState.save();
     var phone = ModalRoute.of(context).settings.arguments;
-    phone = "hejka";
-    final appDir = await syspaths.getApplicationDocumentsDirectory();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("phone", phone);
-    prefs.setString("gmail", gmail);
-    prefs.setString("name", name);
+    prefs.setString("gmail", gmail.trim());
+    prefs.setString("name", name.trim());
     final databaseReference = Firestore.instance;
     var map = {
       'phone': phone,
@@ -72,6 +87,13 @@ class _PersonalInfoState extends State<PersonalInfo> {
               .putFile(file)
               .onComplete;
         });
+      } else {
+        Toast.show(
+          "Dodaj jeszcze pliki potwierdzające twoje umiejętności",
+          context,
+          duration: Toast.LENGTH_LONG,
+        );
+        return;
       }
     }
     await databaseReference.collection("users").document(phone).setData(map);
@@ -97,31 +119,61 @@ class _PersonalInfoState extends State<PersonalInfo> {
     });
   }
 
-  List _categories = [
-    "Sprzątanie",
-    "Montaż i naprawa",
-    "Ogród",
-    "Hydraulik",
-    "Elektryk",
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(6.0), // here the desired height
+          child: TabBar(
+            isScrollable: true,
+            unselectedLabelColor: Colors.white70,
+            indicatorColor: Colors.white60,
+            labelColor: Colors.white,
+            controller: _tabController,
+            labelStyle: TextStyle(
+              fontFamily: "Quicksand",
+              fontSize: 22,
+              color: Colors.black,
+            ),
+            onTap: (i) {
+              setState(() {
+                if (i == 0) {
+                  switched = false;
+                } else {
+                  switched = true;
+                }
+              });
+            },
+            tabs: [
+              Tab(
+                text: "Zleceniodawca",
+              ),
+              Tab(
+                text: "Fachowiec",
+              ),
+            ],
+          ),
+        ),
+      ),
       key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomPadding: true,
       body: Form(
         key: _form,
-        child: Column(
-          children: [
-            Expanded(
-                child: ListView(children: [
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
               SizedBox(
-                height: 60,
+                height: 30,
               ),
               UserImagePicker(_pickedImage),
+              SizedBox(
+                height: 30,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: TextFormField(
+                  style: Theme.of(context).textTheme.subhead,
                   decoration: InputDecoration(
                     hintText: "Imie",
                     contentPadding: EdgeInsets.all(12.0),
@@ -132,7 +184,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                   keyboardType: TextInputType.text,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Please provide a value.';
+                      return 'Podaj imię';
                     }
                     return null;
                   },
@@ -146,18 +198,21 @@ class _PersonalInfoState extends State<PersonalInfo> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: TextFormField(
+                  style: Theme.of(context).textTheme.subhead,
                   decoration: InputDecoration(
-                    hintText: "Adres gmail",
+                    hintText: "Adres email",
                     contentPadding: EdgeInsets.all(12.0),
                     border: InputBorder.none,
                     filled: true,
                     fillColor: Colors.grey[200],
                   ),
                   focusNode: _gmailFocusNode,
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please provide a value.';
+                    if (!RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                        .hasMatch(value)) {
+                      return 'Wprowadź prawidłowy adres email';
                     }
                     return null;
                   },
@@ -180,9 +235,15 @@ class _PersonalInfoState extends State<PersonalInfo> {
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                           ),
-                          child: DropdownButton(
+                          child: DropdownButtonFormField(
                             hint: Text("Wybierz fach"),
                             value: category,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Wybierz fach';
+                              }
+                              return null;
+                            },
                             items: _categories.map((value) {
                               return DropdownMenuItem(
                                 child: Text(value),
@@ -190,9 +251,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
                               );
                             }).toList(),
                             isExpanded: true,
-                            underline: Divider(
-                              height: 2,
-                            ),
                             onChanged: (value) {
                               setState(() {
                                 category = value;
@@ -204,6 +262,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
                           padding:
                               EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                           child: TextFormField(
+                            style: Theme.of(context).textTheme.subhead,
                             decoration: InputDecoration(
                               hintText:
                                   "Krótki opis, opisz swoje doświadzczenie oraz lata w zawodzie",
@@ -230,54 +289,16 @@ class _PersonalInfoState extends State<PersonalInfo> {
                     )
                   : SizedBox(),
               SizedBox(
-                height: 6,
+                height: 20,
               ),
-            ])),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "Rejestracja dla fachowca",
-                  style: Theme.of(context).textTheme.title,
-                ),
-                Switch(
-                    value: switched,
-                    onChanged: (val) {
-                      setState(() {
-                        switched = val;
-                      });
-                    }),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: 200,
-              child: RaisedButton(
-                onPressed: () {
-                  _saveForm(context);
-                },
-                color: Colors.amber[500],
-                elevation: 6,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(26),
-                  borderSide: BorderSide(width: 1, color: Colors.amber[500]),
-                ),
-                child: Text(
-                  "Dalej",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
+              MyButton(
+                onPressed: () => _saveForm(context),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-          ],
+              SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );
