@@ -18,8 +18,10 @@ class Work with ChangeNotifier {
     var prefs = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
     var dateString = DateFormat.yMMMMd().format(now);
-    notice.putIfAbsent("dateOfIssue", () => dateString);
+    notice.putIfAbsent("createdAt", () => dateString);
     notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
+    notice.putIfAbsent("userImage", () => prefs.getString("image"));
+    notice.putIfAbsent("userName", () => prefs.getString("name"));
     Firestore.instance
         .collection("notices")
         .add({"variety": choices, ...notice});

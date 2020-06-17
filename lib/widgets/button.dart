@@ -24,7 +24,7 @@ class MyButton extends StatelessWidget {
         child: Text(
           text ?? "Dalej",
           style: TextStyle(
-            fontFamily: "Gotham",
+            fontFamily: "Quicksand",
             color: textColor ?? Colors.white,
             fontSize: 32,
             fontWeight: FontWeight.w700,

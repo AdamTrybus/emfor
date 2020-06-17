@@ -30,8 +30,10 @@ class Notices with ChangeNotifier {
           place: notice["place"],
           time: notice["time"],
           userPhone: notice["userPhone"],
-          dateOfIssue: notice["dateOfIssue"],
+          createdAt: notice["createdAt"],
           interests: notice["interests"],
+          userName: notice["userName"],
+          userImage: notice["userImage"],
         ));
       });
     });
@@ -62,8 +64,10 @@ class Notices with ChangeNotifier {
           place: notice["place"],
           time: notice["time"],
           userPhone: notice["userPhone"],
-          dateOfIssue: notice["dateOfIssue"],
+          createdAt: notice["createdAt"],
           interests: notice["interests"],
+          userName: notice["userName"],
+          userImage: notice["userImage"],
         ));
       });
       notifyListeners();

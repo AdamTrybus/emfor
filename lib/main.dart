@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:new_emfor/screens/auth_screen.dart';
+import 'package:new_emfor/screens/depute_detail_screen.dart';
 import './screens/phone_verification.dart';
 import './providers/notices.dart';
 import './screens/category_screen.dart';
 import './screens/chat_detail_screen.dart';
-import './screens/my_notices_detail_screen.dart';
 import './screens/notice_detail_screen.dart';
 import './screens/notice_screen.dart';
 import './screens/overview_screen.dart';
@@ -102,7 +101,7 @@ class MyApp extends StatelessWidget {
               default:
                 return snapshot.data.getString("phone") != null
                     ? OverviewScreen()
-                    : AuthScreen();
+                    : OverviewScreen();
             }
           },
         ),
@@ -113,7 +112,7 @@ class MyApp extends StatelessWidget {
           CodeInput.routeName: (ctx) => CodeInput(),
           NoticeScreen.routeName: (ctx) => NoticeScreen(),
           NoticeDetailScreen.routeName: (ctx) => NoticeDetailScreen(),
-          MyNoticesDetailScreen.routeName: (ctx) => MyNoticesDetailScreen(),
+          DeputeDetailScreen.routeName: (ctx) => DeputeDetailScreen(),
           ChatScreenDetail.routeName: (ctx) => ChatScreenDetail(),
           ChangeProfile.routeName: (ctx) => ChangeProfile(),
           PhoneVerification.routeName: (ctx) => PhoneVerification(),

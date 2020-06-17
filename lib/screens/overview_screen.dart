@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_emfor/screens/chat_screen.dart';
-import '../screens/my_notices_screen.dart';
+import '../screens/depute_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/notice_screen.dart';
 import '../screens/settings_screen.dart';
@@ -21,7 +21,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
       'title': 'Ogłoszenia',
     },
     {
-      'page': MyNoticesScreen(),
+      'page': DeputeScreen(),
       'title': 'Moje ogłoszenia',
     },
     {

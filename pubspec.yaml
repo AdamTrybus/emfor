@@ -80,7 +80,6 @@ flutter:
   assets:
     - assets/user_image.png
     - assets/emfor_logo.png
-    - assets/emfor_auth_screen.png
   fonts:
     - family: Lato
       fonts:

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/notice.dart';
+import 'package:new_emfor/widgets/button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PriceSheet extends StatefulWidget {
@@ -15,36 +16,55 @@ class PriceSheet extends StatefulWidget {
 class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
   var controller = TextEditingController();
   bool validate = false;
+  bool negotiate = false;
+
   void _submitData() async {
-    if (controller.text.isEmpty) {
+    if (controller.text.isEmpty && !negotiate) {
       setState(() {
         validate = true;
       });
       return;
     }
-    final price = double.parse(controller.text);
-    if (price <= 0) {
-      setState(() {
-        validate = true;
-      });
-      return;
+    var price;
+    if (!negotiate) {
+      price = double.parse(controller.text);
+      if (price <= 0) {
+        setState(() {
+          validate = true;
+        });
+        return;
+      }
+    } else {
+      price = "Cena do ustalenia";
     }
     var prefs = await SharedPreferences.getInstance();
     Notice notice = widget.notice;
-    Firestore.instance
-        .collection("notices")
-        .document(notice.id)
-        .updateData({
-      "interests": notice.interests !=null
+    Firestore.instance.collection("notices").document(notice.id).updateData({
+      "interests": notice.interests != null
           ? {
               ...notice.interests,
-              prefs.getString("phone"): controller.text.trim(),
+              prefs.getString("phone"): price,
             }
           : {
-              prefs.getString("phone"): controller.text.trim(),
+              prefs.getString("phone"): price,
             },
     });
     Navigator.of(context).pushReplacementNamed("/");
+  }
+
+  Widget radioButton({
+    @required bool value,
+  }) {
+    return Radio(
+      value: value,
+      activeColor: Colors.black,
+      groupValue: negotiate,
+      onChanged: (d) {
+        setState(() {
+          negotiate = d;
+        });
+      },
+    );
   }
 
   @override
@@ -57,21 +77,47 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
             SizedBox(
               height: 10,
             ),
-            Text("Wpisz satysfakcjonującą cię cenę",
-                style: Theme.of(context).textTheme.subhead),
-            SizedBox(
-              height: 10,
+            Row(
+              children: [
+                radioButton(value: false),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 24),
+                    child: TextField(
+                      enabled: !negotiate,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(12.0),
+                          border: InputBorder.none,
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          hintText: "Wycena",
+                          errorText: validate
+                              ? "Wprowadź kwotę większą od zera"
+                              : null),
+                      keyboardType: TextInputType.number,
+                      controller: controller,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                    labelText: 'Wycena',
-                    errorText:
-                        validate ? "Wprowadź kwotę większą od zera" : null),
-                keyboardType: TextInputType.number,
-                controller: controller,
-              ),
+            SizedBox(
+              height: 6,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                radioButton(value: true),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 24),
+                    child: Text(
+                      "Cena do ustalenia",
+                      style: Theme.of(context).textTheme.subhead,
+                    ),
+                  ),
+                )
+              ],
             ),
             AnimatedSize(
               vsync: this,
@@ -83,25 +129,9 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
                     : MediaQuery.of(context).viewInsets.bottom,
               ),
             ),
-            SizedBox(
-              width: 200,
-              child: RaisedButton(
-                onPressed: _submitData,
-                color: Colors.amber[500],
-                elevation: 6,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(26),
-                  borderSide: BorderSide(width: 1, color: Colors.amber[500]),
-                ),
-                child: Text(
-                  "Zatwierdź",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
+            MyButton(
+              onPressed: _submitData,
+              text: "Zatwierdź",
             ),
             SizedBox(
               height: 6,

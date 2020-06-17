@@ -18,7 +18,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) {
-      Provider.of<Notices>(context,listen: false).fetchAndSetItems().then((_) {
+      Provider.of<Notices>(context, listen: false).fetchAndSetItems().then((_) {
         setState(() {
           _isLoading = false;
         });
@@ -33,7 +33,6 @@ class _NoticeScreenState extends State<NoticeScreen> {
     return _isLoading
         ? Center(child: CircularProgressIndicator())
         : ListView.builder(
-            padding: const EdgeInsets.all(10.0),
             itemCount: items.length,
             shrinkWrap: true,
             itemBuilder: (ctx, i) => NoticeItem(items[i]),
