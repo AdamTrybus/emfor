@@ -17,12 +17,16 @@ class DeputeDetailScreen extends StatelessWidget {
             notice: notice,
             height: height,
           ),
-          RaisedButton(
-            color: Colors.black,
-            onPressed: () {},
-            child: Text(
-              "Czat",
-              style: TextStyle(color: Colors.white, fontFamily: "Lato"),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20,vertical:4),
+            alignment: Alignment.centerRight,
+                      child: RaisedButton(
+              color: Colors.black,
+              onPressed: () {},
+              child: Text(
+                "Czat",
+                style: TextStyle(color: Colors.white, fontFamily: "Lato"),
+              ),
             ),
           ),
           SizedBox(

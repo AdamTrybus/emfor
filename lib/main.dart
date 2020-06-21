@@ -14,6 +14,7 @@ import './widgets/personal_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './providers/work.dart';
 import 'package:provider/provider.dart';
+import './screens/auth_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -101,7 +102,7 @@ class MyApp extends StatelessWidget {
               default:
                 return snapshot.data.getString("phone") != null
                     ? OverviewScreen()
-                    : OverviewScreen();
+                    : AuthScreen();
             }
           },
         ),

@@ -25,6 +25,7 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
       var map =
           ModalRoute.of(context).settings.arguments as Map<String, Object>;
       expertPhone = map["phone"];
+      expertPhone = "+48728869451";
       noticeId = map["noticeId"];
       var prefs = await SharedPreferences.getInstance();
       userPhone = prefs.getString("phone");
@@ -77,8 +78,8 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
           : FutureBuilder(
               future: Firestore.instance
                   .collection("chat")
-                  .where("phones", arrayContains: userPhone)
-                  .where("phones", arrayContains: expertPhone)
+                  .where("phones.$userPhone", isEqualTo: true)
+                  .where("phones.$expertPhone", isEqualTo: true)
                   .getDocuments(),
               builder: (ctx, futureSnapshot) {
                 if (futureSnapshot.connectionState == ConnectionState.waiting) {
@@ -88,6 +89,13 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
                 }
                 if (futureSnapshot.data.documents.isNotEmpty) {
                   chatId = futureSnapshot.data.documents.first.documentID;
+                }else{
+                  chatId = "$noticeId-$expertPhone";
+                  Firestore.instance
+                      .collection("chat")
+                      .document(chatId).setData({
+                        "phones": {userPhone: true, "+48728869451": true}
+                      });
                 }
                 return StreamBuilder(
                   stream: Firestore.instance

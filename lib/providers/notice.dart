@@ -10,7 +10,6 @@ class Notice {
   final String place;
   final String userPhone;
   final String createdAt;
-  final interests;
   final String userName;
   final String userImage;
 
@@ -24,7 +23,6 @@ class Notice {
     @required this.place,
     @required this.userPhone,
     @required this.createdAt,
-    @required this.interests,
     @required this.userName,
     @required this.userImage,
   });

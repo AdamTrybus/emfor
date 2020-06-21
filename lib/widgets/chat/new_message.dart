@@ -15,19 +15,10 @@ class _NewMessageState extends State<NewMessage> {
   void sendMessage() async {
     FocusScope.of(context).unfocus();
 
-    String chatId = widget.chatId;
-    if (chatId == "no path") {
-      await Firestore.instance.collection("chat").add({
-        "phones": [widget.userPhone, widget.expertPhone]
-      }).then((value) {
-        chatId = value.documentID;
-      });
-    }
-
     final databaseReference = Firestore.instance;
     await databaseReference
         .collection("chat")
-        .document(chatId)
+        .document(widget.chatId)
         .collection("messages")
         .add({
       'text': _enteredMessage,

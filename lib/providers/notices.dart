@@ -31,7 +31,6 @@ class Notices with ChangeNotifier {
           time: notice["time"],
           userPhone: notice["userPhone"],
           createdAt: notice["createdAt"],
-          interests: notice["interests"],
           userName: notice["userName"],
           userImage: notice["userImage"],
         ));
@@ -65,7 +64,6 @@ class Notices with ChangeNotifier {
           time: notice["time"],
           userPhone: notice["userPhone"],
           createdAt: notice["createdAt"],
-          interests: notice["interests"],
           userName: notice["userName"],
           userImage: notice["userImage"],
         ));

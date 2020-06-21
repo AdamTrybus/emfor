@@ -27,27 +27,32 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
     }
     var price;
     if (!negotiate) {
-      price = double.parse(controller.text);
-      if (price <= 0) {
+      if (double.parse(controller.text) <= 0) {
         setState(() {
           validate = true;
         });
         return;
       }
+      price = "${controller.text}zł";
     } else {
-      price = "Cena do ustalenia";
+      price = "--/--";
     }
     var prefs = await SharedPreferences.getInstance();
     Notice notice = widget.notice;
-    Firestore.instance.collection("notices").document(notice.id).updateData({
-      "interests": notice.interests != null
-          ? {
-              ...notice.interests,
-              prefs.getString("phone"): price,
-            }
-          : {
-              prefs.getString("phone"): price,
-            },
+    Firestore.instance
+        .collection("notices")
+        .document(notice.id)
+        .collection("eagers")
+        .document(prefs.getString("phone"))
+        .setData({
+      "expertImage": prefs.getString("image"),
+      "expertName": prefs.getString("name"),
+      "estimate": price,
+      "noticeTitle": notice.service,
+      "noticeId": notice.id,
+      "expertPhone": prefs.getString("phone"),
+      "principal": notice.userPhone,
+      "createdAt": notice.createdAt,
     });
     Navigator.of(context).pushReplacementNamed("/");
   }
@@ -85,12 +90,14 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
                     padding: EdgeInsets.symmetric(vertical: 6, horizontal: 24),
                     child: TextField(
                       enabled: !negotiate,
+                      maxLength: 4,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(12.0),
                           border: InputBorder.none,
                           filled: true,
                           fillColor: Colors.grey[200],
                           hintText: "Wycena",
+                          suffixText: "zł",
                           errorText: validate
                               ? "Wprowadź kwotę większą od zera"
                               : null),
