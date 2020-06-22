@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:new_emfor/providers/user.dart';
 import 'package:toast/toast.dart';
 import '../widgets/files_picker.dart';
 import './user_image_picker.dart';
@@ -10,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
 import '../widgets/button.dart';
+import 'package:provider/provider.dart';
 
 class PersonalInfo extends StatefulWidget {
   static const routeName = "/personal-info";
@@ -55,17 +57,19 @@ class _PersonalInfoState extends State<PersonalInfo>
     prefs.setString("phone", phone);
     prefs.setString("gmail", gmail.trim());
     prefs.setString("name", name.trim());
+    prefs.setBool("expert", false);
     final databaseReference = Firestore.instance;
     var map = {
       'phone': phone,
       'gmail': gmail.trim(),
       'name': name.trim(),
     };
+    var url;
     if (imageFile != null) {
       final ref =
           FirebaseStorage.instance.ref().child(phone).child("userImage.jpg");
       await ref.putFile(imageFile).onComplete;
-      final url = await ref.getDownloadURL();
+      url = await ref.getDownloadURL();
       prefs.setString("image", url);
       map.putIfAbsent("imageUrl", () => url);
     }
@@ -78,6 +82,7 @@ class _PersonalInfoState extends State<PersonalInfo>
       map.putIfAbsent("category", () => category);
       map.putIfAbsent("description", () => description);
       if (files != null) {
+        prefs.setBool("expert", true);
         files.forEach((file) async {
           await FirebaseStorage.instance
               .ref()

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/user.dart';
 import 'package:new_emfor/screens/depute_detail_screen.dart';
 import './screens/phone_verification.dart';
 import './providers/notices.dart';
@@ -31,6 +32,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: Notices(),
+        ),
+        ChangeNotifierProvider.value(
+          value: User(),
         ),
       ],
       child: MaterialApp(

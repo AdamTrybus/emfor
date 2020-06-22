@@ -178,6 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   Navigator.of(context).pushNamed(ChatScreenDetail.routeName, arguments: {
                                     "noticeId": ids[x]["id"],
                                     "phone": range[x].expertPhone,
+                                    "name": range[x].expertName,
                                   });
                                 },
                                 child: Text(
