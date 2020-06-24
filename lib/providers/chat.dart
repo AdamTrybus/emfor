@@ -7,6 +7,7 @@ class Chat {
   final String expertPhone;
   final String principal;
   final String createdAt;
+  final bool read;
 
   Chat({
     this.expertImage,
@@ -17,5 +18,6 @@ class Chat {
     this.expertPhone,
     this.principal,
     this.createdAt,
+    this.read,
   });
 }

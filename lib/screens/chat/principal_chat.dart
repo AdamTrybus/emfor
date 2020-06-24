@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../providers/chat.dart';
+import 'package:new_emfor/providers/chat.dart';
+import 'package:new_emfor/providers/read.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import './chat_detail_screen.dart';
+import '../chat_detail_screen.dart';
 
-class ChatScreen extends StatefulWidget {
+class PrincipalChat extends StatefulWidget {
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  _PrincipalChatState createState() => _PrincipalChatState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _PrincipalChatState extends State<PrincipalChat> {
   final List<Chat> notices = [];
   var range;
   final ids = [];
@@ -33,7 +35,9 @@ class _ChatScreenState extends State<ChatScreen> {
             noticeId: element["noticeId"],
             expertPhone: element["expertPhone"],
             principal: element["principal"],
-            createdAt: element["createdAt"]);
+            createdAt: element["createdAt"],
+            read: element["read"]);
+
         var map = {
           "id": chat.noticeId,
           "title": chat.noticeTitle,
@@ -62,7 +66,8 @@ class _ChatScreenState extends State<ChatScreen> {
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : ListView.builder(
+        : 
+        ListView.builder(
             itemCount: ids.length,
             itemBuilder: (ctx, i) => ListView(
               physics: NeverScrollableScrollPhysics(),
@@ -175,11 +180,22 @@ class _ChatScreenState extends State<ChatScreen> {
                               RaisedButton(
                                 color: Colors.black,
                                 onPressed: () {
-                                  Navigator.of(context).pushNamed(ChatScreenDetail.routeName, arguments: {
-                                    "noticeId": ids[x]["id"],
-                                    "phone": range[x].expertPhone,
-                                    "name": range[x].expertName,
-                                  });
+                                  Provider.of<Read>(context, listen: false)
+                                      .setValues(
+                                    chatId:
+                                        "${ids[x]["id"]}-${range[x].expertPhone}",
+                                    expertPhone: range[x].expertPhone,
+                                    isExpert: false,
+                                    noticeId: ids[x]["id"],
+                                  );
+                                  Navigator.of(context).pushNamed(
+                                      ChatScreenDetail.routeName,
+                                      arguments: {
+                                        "noticeId": ids[x]["id"],
+                                        "noticeTitle": ids[x]["title"],
+                                        "phone": range[x].expertPhone,
+                                        "name": range[x].expertName,
+                                      });
                                 },
                                 child: Text(
                                   "Czat",
@@ -187,28 +203,23 @@ class _ChatScreenState extends State<ChatScreen> {
                                       color: Colors.white, fontFamily: "Lato"),
                                 ),
                               ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: Container(
-                                  padding: EdgeInsets.all(2.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50.0),
-                                    color: Colors.amber[800],
-                                  ),
-                                  constraints: BoxConstraints(
-                                    minWidth: 16,
-                                    minHeight: 16,
-                                  ),
-                                  child: Text(
-                                    "!",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              !range[x].read
+                                  ? Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        padding: EdgeInsets.all(6.0),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.amber[800],
+                                        ),
+                                        constraints: BoxConstraints(
+                                          minWidth: 16,
+                                          minHeight: 16,
+                                        ),
+                                      ),
+                                    )
+                                  : SizedBox(),
                             ],
                           ),
                         ],

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:new_emfor/providers/user.dart';
 import 'package:toast/toast.dart';
 import '../widgets/files_picker.dart';
 import './user_image_picker.dart';

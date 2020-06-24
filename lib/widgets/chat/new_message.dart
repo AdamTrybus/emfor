@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/read.dart';
+import 'package:provider/provider.dart';
 
 class NewMessage extends StatefulWidget {
-  final String chatId, userPhone, expertPhone;
-  NewMessage(this.chatId, this.userPhone, this.expertPhone);
+  final String chatId, userPhone;
+  NewMessage(this.chatId, this.userPhone);
   @override
   _NewMessageState createState() => _NewMessageState();
 }
@@ -25,6 +27,7 @@ class _NewMessageState extends State<NewMessage> {
       'createdAt': Timestamp.now(),
       'userPhone': widget.userPhone,
     });
+    Provider.of<Read>(context, listen: false).setNotRead();
     _controller.clear();
   }
 

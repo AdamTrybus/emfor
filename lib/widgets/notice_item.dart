@@ -40,12 +40,13 @@ class NoticeItem extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: NetworkImage(
-                        notice.userImage,
-                      ) ??
-                      Image.asset(
-                        "assets/user_image.png",
-                      ),
+                  backgroundImage: notice.userImage != null
+                      ? NetworkImage(
+                          notice.userImage,
+                        )
+                      : AssetImage(
+                          "assets/user_image.png",
+                        ),
                 ),
                 SizedBox(
                   width: 8,

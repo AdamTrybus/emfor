@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:new_emfor/providers/user.dart';
-import 'package:new_emfor/screens/depute_detail_screen.dart';
+import './providers/read.dart';
+import './screens/depute_detail_screen.dart';
+import './screens/depute_screen.dart';
 import './screens/phone_verification.dart';
 import './providers/notices.dart';
 import './screens/category_screen.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
           value: Notices(),
         ),
         ChangeNotifierProvider.value(
-          value: User(),
+          value: Read(),
         ),
       ],
       child: MaterialApp(
@@ -74,6 +75,7 @@ class MyApp extends StatelessWidget {
                 subtitle: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
                 subhead: TextStyle(
                     fontSize: 20,
@@ -105,7 +107,7 @@ class MyApp extends StatelessWidget {
                 return CircularProgressIndicator();
               default:
                 return snapshot.data.getString("phone") != null
-                    ? OverviewScreen()
+                    ? OverviewScreen(snapshot.data.getBool("expert"))
                     : AuthScreen();
             }
           },
@@ -116,6 +118,7 @@ class MyApp extends StatelessWidget {
           PersonalInfo.routeName: (ctx) => PersonalInfo(),
           CodeInput.routeName: (ctx) => CodeInput(),
           NoticeScreen.routeName: (ctx) => NoticeScreen(),
+          DeputeScreen.routeName: (ctx) => DeputeScreen(),
           NoticeDetailScreen.routeName: (ctx) => NoticeDetailScreen(),
           DeputeDetailScreen.routeName: (ctx) => DeputeDetailScreen(),
           ChatScreenDetail.routeName: (ctx) => ChatScreenDetail(),

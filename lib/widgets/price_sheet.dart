@@ -53,6 +53,7 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
       "expertPhone": prefs.getString("phone"),
       "principal": notice.userPhone,
       "createdAt": notice.createdAt,
+      "read":true,
     });
     Navigator.of(context).pushReplacementNamed("/");
   }

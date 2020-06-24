@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:new_emfor/widgets/change_profile.dart';
+import '../screens/depute_screen.dart';
+import '../widgets/change_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -29,10 +30,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         ListTile(
-          leading: Icon(Icons.change_history),
+          leading: Icon(Icons.account_box),
           title: Text("Profil"),
           onTap: (){
             Navigator.of(context).pushNamed(ChangeProfile.routeName);
+          },
+        ),
+        Divider(
+          height: 2,
+          thickness: 1,
+        ),
+        ListTile(
+          leading: Icon(Icons.event_available),
+          title: Text("Moje ogłoszenia"),
+          onTap: (){
+            Navigator.of(context).pushNamed(DeputeScreen.routeName);
           },
         ),
         Divider(
