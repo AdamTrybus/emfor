@@ -47,6 +47,7 @@ class _CodeInputState extends State<CodeInput> {
               prefs.setString("phone", phone);
               prefs.setString("gmail", value.data["gmail"]);
               prefs.setString("name", value.data["name"]);
+              prefs.setBool("expert", value.data["expert"]);
               prefs.setString("imageUrl", value.data["imageUrl"]);
               Navigator.of(context).pushNamed("/");
             } else {

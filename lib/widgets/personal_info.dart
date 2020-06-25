@@ -56,12 +56,13 @@ class _PersonalInfoState extends State<PersonalInfo>
     prefs.setString("phone", phone);
     prefs.setString("gmail", gmail.trim());
     prefs.setString("name", name.trim());
-    prefs.setBool("expert", false);
+    prefs.setBool("expert", switched);
     final databaseReference = Firestore.instance;
     var map = {
       'phone': phone,
       'gmail': gmail.trim(),
       'name': name.trim(),
+      "expert": switched,
     };
     var url;
     if (imageFile != null) {
@@ -81,7 +82,6 @@ class _PersonalInfoState extends State<PersonalInfo>
       map.putIfAbsent("category", () => category);
       map.putIfAbsent("description", () => description);
       if (files != null) {
-        prefs.setBool("expert", true);
         files.forEach((file) async {
           await FirebaseStorage.instance
               .ref()

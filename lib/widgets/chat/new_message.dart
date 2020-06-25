@@ -15,15 +15,15 @@ class _NewMessageState extends State<NewMessage> {
   var _enteredMessage = "";
 
   void sendMessage() async {
+    var text = _enteredMessage;
+    _enteredMessage = "";
     FocusScope.of(context).unfocus();
-
-    final databaseReference = Firestore.instance;
-    await databaseReference
+    await Firestore.instance
         .collection("chat")
         .document(widget.chatId)
         .collection("messages")
         .add({
-      'text': _enteredMessage,
+      'text': text,
       'createdAt': Timestamp.now(),
       'userPhone': widget.userPhone,
     });
@@ -50,7 +50,7 @@ class _NewMessageState extends State<NewMessage> {
                 ),
                 decoration: InputDecoration(
                   labelText: 'Wyślij wiadomość..',
-                  labelStyle: new TextStyle(color: Colors.white),
+                  labelStyle: TextStyle(color: Colors.white),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
                   ),
