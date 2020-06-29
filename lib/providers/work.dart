@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:new_emfor/providers/categories.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Work with ChangeNotifier {
@@ -10,6 +11,7 @@ class Work with ChangeNotifier {
   String _question = "", subcategory;
   List<String> _options = [];
   String place, description, time;
+  bool _multi;
   List<String> get options {
     return [..._options];
   }
@@ -27,11 +29,16 @@ class Work with ChangeNotifier {
         .add({"variety": choices, ...notice});
   }
 
+  bool get multi {
+    return _multi;
+  }
+
   String get question {
     return _question;
   }
 
   void setSubcategory(String subcategory1) {
+    choices.clear();
     subcategory = subcategory1;
   }
 
@@ -74,48 +81,21 @@ class Work with ChangeNotifier {
   }
 
   void setOptions() async {
-    await Firestore.instance
-        .collection("work")
-        .document("Elektryk")
-        .get()
-        .then((value) {
-      var string = value.data.values;
-      String val = string.toString().replaceAll("(", ""); //removing (...)
-      val = val.replaceAll(")", "");
-      _question = value.data.keys.first;
-      _options = val.split(",");
-    });
+    _question = "Co się stało ?";
+    _options = Categories().workData["Elektryk"].keys.toList();
     notifyListeners();
   }
 
   Future<void> setSubCollection(int i) async {
-    if (length == 0) {
-      await Firestore.instance
-          .collection("work")
-          .document("Elektryk")
-          .collection(subcategory)
-          .getDocuments()
-          .then((value) => length = value.documents.length + 3);
-      print(length);
-    }
-    _options = [];
-    _question = "";
-    await Firestore.instance
-        .collection("work")
-        .document("Elektryk")
-        .collection(subcategory)
-        .document(i.toString())
-        .get()
-        .then((value) {
-      if (!value.exists) {
-      } else {
-        var string = value.data.values;
-        String val = string.toString().replaceAll("(", "");
-        val = val.replaceAll(")", "");
-        _question = value.data.keys.first;
-        _options = val.split(",");
-      }
-    });
+    length = Categories().workData["Elektryk"][subcategory].length + 3;
+    _question = Categories()
+        .workData["Elektryk"][subcategory]
+        .keys
+        .toList()
+        .elementAt(i);
+    var data = Categories().workData["Elektryk"][subcategory][_question];
+    _options = data["options"];
+    _multi = data["multi"];
     notifyListeners();
   }
 }

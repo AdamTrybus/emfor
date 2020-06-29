@@ -8,6 +8,7 @@ class TimePicker extends StatefulWidget {
 }
 
 class _TimePickerState extends State<TimePicker> {
+  String group = "";
   String question = "Termin usługi";
   List<String> options = [
     "W ciągu kilku dni",
@@ -16,21 +17,15 @@ class _TimePickerState extends State<TimePicker> {
     "Dokładna data"
   ];
   List<String> choices = [];
-  Widget checkbox(String title) {
+  Widget radioButton(String title) {
     return Row(
       children: <Widget>[
-        Checkbox(
-          value: choices.contains(title),
-          onChanged: (bool value) {
-            if (value) {
-              choices.add(title);
-              Provider.of<Work>(context, listen: false)
-                  .setNotice("time", choices.join(","));
-            } else {
-              choices.remove(title);
-              Provider.of<Work>(context, listen: false)
-                  .setNotice("time", choices.join(","));
-            }
+        Radio(
+          groupValue: group,
+          value: title,
+          onChanged: (value) {
+            group = value;
+            Provider.of<Work>(context, listen: false).setChoices("time", value);
           },
         ),
         Text(
@@ -44,10 +39,11 @@ class _TimePickerState extends State<TimePicker> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(microseconds: 0)).then((value) async {
+    Future.delayed(Duration(microseconds: 0)).then((value) {
       Provider.of<Work>(context, listen: false).setQuestion("time");
       setState(() {
         choices = Provider.of<Work>(context, listen: false).getNotice();
+        group = choices.first;
       });
     });
   }
@@ -70,7 +66,7 @@ class _TimePickerState extends State<TimePicker> {
           shrinkWrap: true,
           itemCount: options.length,
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          itemBuilder: (ctx, i) => checkbox(options[i]),
+          itemBuilder: (ctx, i) => radioButton(options[i]),
         )
       ],
     );

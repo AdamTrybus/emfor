@@ -15,12 +15,16 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
   String question;
   List<String> options;
   List<String> choices = [];
-  int i = 1, length;
+  bool multi;
+  String group = "";
+  int i = 0, length;
   void _onBackPressed() {
     i -= 1;
-    if (i < 1) {
+    if (i < 0) {
       Provider.of<Work>(context, listen: false).setOptions();
       Navigator.of(context).pop();
+    } else if (i >= length - 3) {
+      setState(() {});
     } else {
       Provider.of<Work>(context, listen: false).setSubCollection(i);
     }
@@ -51,8 +55,28 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
     );
   }
 
+  Widget radioButton(String title) {
+    return Row(
+      children: <Widget>[
+        Radio(
+          groupValue: group,
+          value: title,
+          onChanged: (value) {
+            group = value;
+            Provider.of<Work>(context, listen: false)
+                .setChoices(question, value);
+          },
+        ),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.title,
+        ),
+      ],
+    );
+  }
+
   Widget mainView() {
-    if (i < length - 2) {
+    if (i < length - 3) {
       return Column(
         children: [
           Container(
@@ -69,13 +93,14 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
             shrinkWrap: true,
             itemCount: options.length,
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            itemBuilder: (ctx, i) => checkbox(options[i]),
+            itemBuilder: (ctx, i) =>
+                multi ? checkbox(options[i]) : radioButton(options[i]),
           )
         ],
       );
-    } else if (i < length - 1) {
+    } else if (i < length - 2) {
       return TimePicker();
-    } else if (i < length) {
+    } else if (i < length - 1) {
       return Description();
     } else
       return AutocompleteMap();
@@ -87,7 +112,10 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
     question = Provider.of<Work>(context).question;
     length = Provider.of<Work>(context).length;
     choices = Provider.of<Work>(context).getChoices();
-
+    multi = Provider.of<Work>(context).multi;
+    if (choices.isNotEmpty) {
+      group = choices.first;
+    }
     return WillPopScope(
       onWillPop: () {
         _onBackPressed();
@@ -109,22 +137,25 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
                   child: Text("Cofnij"),
                 ),
                 RaisedButton(
-                  onPressed: choices.length == 0 && i < length - 2
+                  onPressed: choices.length == 0 && i < length - 3
                       ? null
                       : () async {
-                          i += 1; //ustawiamy od razu dla nastepny widok
-                          Provider.of<Work>(context, listen: false)
-                              .setSubCollection(i);
-                          if (i < length - 2) {
+                          i++;
+                          if (i < length - 3) {
+                            Provider.of<Work>(context, listen: false)
+                                .setSubCollection(i);
                             Provider.of<Work>(context, listen: false)
                                 .setChoices(question, choices.join(","));
                             choices = [];
-                          } else if (i == length + 1) {
+                          } else if (i == length) {
                             //sprawdzamy czy to koniec
                             Provider.of<Work>(context, listen: false).publish();
-                            Navigator.of(context).popUntil((route) => route.isFirst);
+                            Navigator.of(context)
+                                .popUntil((route) => route.isFirst);
                             Navigator.of(context).pushReplacementNamed("/");
-                          } else {}
+                          } else {
+                            setState(() {});
+                          }
                         },
                   child: Text(i == length ? "Zakończ" : "Dalej"),
                 ),

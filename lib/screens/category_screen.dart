@@ -56,7 +56,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     .setSubcategory(options[i]);
                 Provider.of<Work>(context,listen: false).setNotice("service", options[i]);
                 await Provider.of<Work>(context, listen: false)
-                    .setSubCollection(1);
+                    .setSubCollection(0);
                 Navigator.of(context).pushNamed(SubcategoryScreen.routeName);
               },
             ),
