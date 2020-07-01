@@ -8,7 +8,7 @@ class Work with ChangeNotifier {
   int length = 0;
   Map<String, String> notice = {};
   Map<String, String> choices = {};
-  String _question = "", subcategory;
+  String _question = "", subcategory, category;
   List<String> _options = [];
   String place, description, time;
   bool _multi;
@@ -20,6 +20,8 @@ class Work with ChangeNotifier {
     var prefs = await SharedPreferences.getInstance();
     DateTime now = DateTime.now();
     var dateString = DateFormat.yMMMMd().format(now);
+    notice.putIfAbsent("category", () => category);
+    notice.putIfAbsent("service", () => subcategory);
     notice.putIfAbsent("createdAt", () => dateString);
     notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
     notice.putIfAbsent("userImage", () => prefs.getString("image"));
@@ -37,6 +39,10 @@ class Work with ChangeNotifier {
     return _question;
   }
 
+  void setCategory(String cat) {
+    category = cat;
+  }
+
   void setSubcategory(String subcategory1) {
     choices.clear();
     subcategory = subcategory1;
@@ -51,11 +57,11 @@ class Work with ChangeNotifier {
     notifyListeners();
   }
 
-  List<String> getNotice() {
+  String getNotice() {
     try {
-      return notice[question].split(",");
+      return notice[question];
     } catch (error) {
-      return [];
+      return "";
     }
   }
 
@@ -70,7 +76,9 @@ class Work with ChangeNotifier {
 
   List<String> getChoices() {
     try {
-      return choices[question].split(",");
+      var list = choices[question].split(",");
+      list.removeWhere((element) => element.isEmpty);
+      return list;
     } catch (error) {
       return [];
     }
@@ -81,19 +89,15 @@ class Work with ChangeNotifier {
   }
 
   void setOptions() async {
-    _question = "Co się stało ?";
-    _options = Categories().workData["Elektryk"].keys.toList();
+    _options = Categories().workData[category].keys.toList();
     notifyListeners();
   }
 
   Future<void> setSubCollection(int i) async {
-    length = Categories().workData["Elektryk"][subcategory].length + 3;
-    _question = Categories()
-        .workData["Elektryk"][subcategory]
-        .keys
-        .toList()
-        .elementAt(i);
-    var data = Categories().workData["Elektryk"][subcategory][_question];
+    length = Categories().workData[category][subcategory].length + 3;
+    _question =
+        Categories().workData[category][subcategory].keys.toList().elementAt(i);
+    var data = Categories().workData[category][subcategory][_question];
     _options = data["options"];
     _multi = data["multi"];
     notifyListeners();

@@ -16,23 +16,25 @@ class MessageBubble extends StatelessWidget {
       children: <Widget>[
         Flexible(
           child: Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8),
             decoration: BoxDecoration(
-              color: isMe ? Colors.grey[300] : Colors.amberAccent[400],
-              borderRadius: BorderRadius.all(Radius.circular(24)),
+              color: isMe ? Colors.white : Colors.amberAccent[300],
+              //borderRadius: BorderRadius.all(Radius.circular(24)),
             ),
             padding: EdgeInsets.symmetric(
-              vertical: 12,
-              horizontal: 24,
+              vertical: 8,
+              horizontal: 16,
             ),
             margin: EdgeInsets.symmetric(
-              vertical: 16,
+              vertical: 4,
               horizontal: 8,
             ),
             child: Text(
               message,
               style: TextStyle(
                 fontWeight: FontWeight.normal,
+                fontSize: 18,
                 color: isMe ? Colors.black87 : Colors.white,
               ),
             ),

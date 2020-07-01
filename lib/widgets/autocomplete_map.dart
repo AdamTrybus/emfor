@@ -32,8 +32,8 @@ class _AutocompleteMapState extends State<AutocompleteMap> {
       var addresses =
           await Geocoder.local.findAddressesFromCoordinates(coordinates);
       var first = addresses.first;
-        userLocation =
-            "${first.thoroughfare} ${first.subThoroughfare ?? ""}, ${first.locality}";
+      userLocation =
+          "${first.thoroughfare} ${first.subThoroughfare ?? ""}, ${first.locality}";
       Provider.of<Work>(context, listen: false)
           .setNotice("place", userLocation);
       print(userLocation);
@@ -47,14 +47,14 @@ class _AutocompleteMapState extends State<AutocompleteMap> {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) async {
       Provider.of<Work>(context, listen: false).setQuestion("place");
-      userLocation =
-          Provider.of<Work>(context, listen: false).getNotice().join(",");
+      setState(() {
+        userLocation =
+            Provider.of<Work>(context, listen: false).getNotice() ?? "";
+      });
+      print(userLocation);
       if (userLocation == "") {
         _getUserLocation(null);
       }
-      setState(() {
-        print(userLocation);
-      });
     });
   }
 

@@ -9,14 +9,12 @@ class TimePicker extends StatefulWidget {
 
 class _TimePickerState extends State<TimePicker> {
   String group = "";
-  String question = "Termin usługi";
   List<String> options = [
     "W ciągu kilku dni",
     "W ciągu 1-2 tygodni",
     "Dostosuje się do wykonawcy",
     "Dokładna data"
   ];
-  List<String> choices = [];
   Widget radioButton(String title) {
     return Row(
       children: <Widget>[
@@ -25,7 +23,7 @@ class _TimePickerState extends State<TimePicker> {
           value: title,
           onChanged: (value) {
             group = value;
-            Provider.of<Work>(context, listen: false).setChoices("time", value);
+            Provider.of<Work>(context, listen: false).setNotice("time", value);
           },
         ),
         Text(
@@ -42,8 +40,7 @@ class _TimePickerState extends State<TimePicker> {
     Future.delayed(Duration(microseconds: 0)).then((value) {
       Provider.of<Work>(context, listen: false).setQuestion("time");
       setState(() {
-        choices = Provider.of<Work>(context, listen: false).getNotice();
-        group = choices.first;
+        group = Provider.of<Work>(context, listen: false).getNotice();
       });
     });
   }
@@ -54,7 +51,7 @@ class _TimePickerState extends State<TimePicker> {
       children: [
         Container(
           child: Text(
-            question,
+            "Termin usługi",
             style: Theme.of(context).textTheme.headline,
           ),
           padding: EdgeInsets.all(8),

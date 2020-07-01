@@ -27,54 +27,76 @@ class _NewMessageState extends State<NewMessage> {
       'createdAt': Timestamp.now(),
       'userPhone': widget.userPhone,
     });
-    Provider.of<Read>(context, listen: false).setNotRead();
     _controller.clear();
+    Provider.of<Read>(context, listen: false).setNotRead();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-      color: Colors.black87,
-      child: Container(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                textCapitalization: TextCapitalization.sentences,
-                autocorrect: true,
-                enableSuggestions: true,
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Wyślij wiadomość..',
-                  labelStyle: TextStyle(color: Colors.white),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _enteredMessage = value;
-                  });
-                },
-              ),
-            ),
-            IconButton(
-                color: Theme.of(context).primaryColor,
-                icon: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                ),
-                onPressed: _enteredMessage.trim().isEmpty ? null : sendMessage)
-          ],
+    return Column(
+      children: [
+        SizedBox(
+          height: 4,
         ),
-      ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                height: 45,
+                child: FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: Colors.amber,
+                  child: Icon(
+                    Icons.add,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 8),
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.rectangle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey[400],
+                        offset: Offset(0.0, 5.0),
+                        blurRadius: 6.0,
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    textAlign: TextAlign.left,
+                    controller: _controller,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(8),
+                      hintText: 'Wyślij wiadomość..',
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                          color: Theme.of(context).primaryColor,
+                          icon: Icon(
+                            Icons.send,
+                            color: Colors.black,
+                          ),
+                          onPressed: _enteredMessage.trim().isEmpty
+                              ? null
+                              : sendMessage),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _enteredMessage = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -53,8 +53,13 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
+        backgroundColor: Colors.grey[100],
         appBar: AppBar(
           title: Text(expertName),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         body: isLoading
             ? Center(

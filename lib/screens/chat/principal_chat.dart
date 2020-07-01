@@ -200,17 +200,17 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                                       listen: false)
                                                   .setValues(
                                                 chatId:
-                                                    "${ids[x]["id"]}-${range[x].expertPhone}",
+                                                    "${ids[i]["id"]}-${range[x].expertPhone}",
                                                 expertPhone:
                                                     range[x].expertPhone,
                                                 isExpert: false,
-                                                noticeId: ids[x]["id"],
+                                                noticeId: ids[i]["id"],
                                               );
                                               Navigator.of(context).pushNamed(
                                                   ChatScreenDetail.routeName,
                                                   arguments: {
-                                                    "noticeId": ids[x]["id"],
-                                                    "noticeTitle": ids[x]
+                                                    "noticeId": ids[i]["id"],
+                                                    "noticeTitle": ids[i]
                                                         ["title"],
                                                     "phone":
                                                         range[x].expertPhone,

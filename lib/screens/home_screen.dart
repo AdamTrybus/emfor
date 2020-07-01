@@ -1,7 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/categories.dart';
+import 'package:new_emfor/providers/work.dart';
 import 'package:new_emfor/screens/category_screen.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,62 +10,63 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final categories = [
-    "Budowa domu",
-    "Elektryk",
-    "Hydraulik",
-    "Malarz",
-    "Ogród",
-    "Remont",
-    "Montaż i naprawy",
-    "Meble i zabudowa",
-    "Sprzątanie"
-  ];
-  final availableColors = [
-    Colors.red,
-    Colors.blue,
-    Colors.pink,
-    Colors.green,
-    Colors.cyan,
-    Colors.purple,
-    Colors.amberAccent,
-    Colors.deepOrange,
-    Colors.tealAccent,
-  ];
+  final categories = Categories().workData.keys.toList();
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return ListView.builder(
       padding: const EdgeInsets.all(10.0),
-      itemCount: 9,
-      itemBuilder: (ctx, i) => InkWell(
-        onTap: ()=>Navigator.of(context).pushNamed(CategoryScreen.routeName),
-              child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            gradient: LinearGradient(
-              colors: [
-                availableColors[i].withOpacity(0.4),
-                availableColors[i].withOpacity(0.6),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              stops: [0, 1],
-            ),
-          ),
-          child: Center(
-            child: Text(
-              categories[i],
-              style: Theme.of(context).textTheme.title,
-            ),
+      itemCount: categories.length,
+      itemBuilder: (ctx, i) => Card(
+        elevation: 8,
+        margin: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                categories[i],
+                style: TextStyle(
+                  fontFamily: "Quicksand",
+                  fontSize: 22,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                Categories().workData[categories[i]].keys.toList().join(", "),
+                style: Theme.of(context).textTheme.overline,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: RaisedButton(
+                      onPressed: () {
+                        Provider.of<Work>(context, listen: false)
+                            .setCategory(categories[i]);
+                        Navigator.of(context)
+                            .pushNamed(CategoryScreen.routeName);
+                      },
+                      child: Text(
+                        "Skorzystaj z usługi",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                      color: Colors.amber[600],
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
         ),
-      ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3 / 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
       ),
     );
   }
