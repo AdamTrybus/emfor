@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/widgets/chat/confirm_window.dart';
+import 'package:new_emfor/widgets/chat/guarantee_window.dart';
 import './providers/read.dart';
 import './screens/depute_detail_screen.dart';
 import './screens/depute_screen.dart';
@@ -107,7 +109,7 @@ class MyApp extends StatelessWidget {
                 return CircularProgressIndicator();
               default:
                 return snapshot.data.getString("phone") != null
-                    ? OverviewScreen(snapshot.data.getBool("expert"))
+                    ? ConfirmWindow() //OverviewScreen(snapshot.data.getBool("expert"))
                     : AuthScreen();
             }
           },
@@ -124,6 +126,7 @@ class MyApp extends StatelessWidget {
           ChatScreenDetail.routeName: (ctx) => ChatScreenDetail(),
           ChangeProfile.routeName: (ctx) => ChangeProfile(),
           PhoneVerification.routeName: (ctx) => PhoneVerification(),
+          GuaranteeWindow.routeName: (ctx) => GuaranteeWindow(),
         },
       ),
     );

@@ -110,6 +110,7 @@ class _ExpertChatState extends State<ExpertChat> {
                                             "name": chatDocs[i]
                                                 ["principalName"],
                                             "chatId": chatDocs[i].documentID,
+                                            "process": chatDocs[i]["process"],
                                           });
                                     },
                                     child: Text(

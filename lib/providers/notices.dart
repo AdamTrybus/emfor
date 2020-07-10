@@ -10,12 +10,13 @@ class Notices with ChangeNotifier {
   }
 
   Future<void> fetchAndSetItems() async {
-    _items =[];
+    _items = [];
     var prefs = await SharedPreferences.getInstance();
     String phone = prefs.getString("phone");
     final databaseReference = Firestore.instance;
     await databaseReference
         .collection("notices")
+        .orderBy("createdAt", descending: true)
         .getDocuments()
         .then((QuerySnapshot snapshot) {
       snapshot.documents.forEach((f) {
@@ -47,13 +48,12 @@ class Notices with ChangeNotifier {
     await databaseReference
         .collection("notices")
         .where("userPhone", isEqualTo: phone)
+        .orderBy("createdAt", descending: true)
         .getDocuments()
         .then((QuerySnapshot snapshot) {
       snapshot.documents.forEach((f) {
         dynamic notice = f.data;
-        if (notice["userPhone"] == phone) {
-          print(phone);
-        }
+        if (notice["userPhone"] == phone) {}
         _items.add(Notice(
           id: f.documentID,
           service: notice["service"],

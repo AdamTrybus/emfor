@@ -4,9 +4,10 @@ import 'package:new_emfor/providers/notice.dart';
 import 'package:new_emfor/widgets/list_item.dart';
 
 class InfoDetailBuilder extends StatelessWidget {
-  InfoDetailBuilder({this.notice, this.height});
+  InfoDetailBuilder({this.notice, this.height, this.estimate = ""});
   final Notice notice;
   final double height;
+  final String estimate;
 
   Widget varieties(context) {
     var variety = notice.variety;
@@ -29,7 +30,7 @@ class InfoDetailBuilder extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: height * 0.5,
+          height: height * 0.45,
           child: GoogleMap(
             mapType: MapType.normal,
             zoomControlsEnabled: false,
@@ -42,6 +43,9 @@ class InfoDetailBuilder extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
           child: Column(children: [
+            estimate.isNotEmpty
+                ? ListItem(baseText: "Cena", infoText: estimate)
+                : SizedBox(),
             ListItem(baseText: "Usługa", infoText: notice.service),
             ListItem(baseText: "Miejsce", infoText: notice.place),
             ListItem(

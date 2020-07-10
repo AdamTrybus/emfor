@@ -45,6 +45,7 @@ class _PrincipalChatState extends State<PrincipalChat> {
             stream: Firestore.instance
                 .collectionGroup("eagers")
                 .where("principal", isEqualTo: phone)
+                .orderBy("createdAt", descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -132,7 +133,7 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                   horizontal: 8, vertical: 4),
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
+                                    const EdgeInsets.symmetric(horizontal: 2),
                                 child: Row(
                                   children: [
                                     CircleAvatar(
@@ -192,7 +193,7 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 8),
+                                              horizontal: 4),
                                           child: RaisedButton(
                                             color: Colors.black,
                                             onPressed: () {

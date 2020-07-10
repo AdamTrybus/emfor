@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:new_emfor/providers/read.dart';
+import 'package:new_emfor/widgets/chat/waiting_widget.dart';
+import 'package:new_emfor/widgets/confirm_dialog.dart';
+import 'package:new_emfor/widgets/chat/guarantee_widget.dart';
+import '../providers/read.dart';
+import '../widgets/sheets/first_sheet.dart';
 import 'package:provider/provider.dart';
 import '../widgets/chat/new_message.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +25,7 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
       userName = "",
       userImage = "",
       title = "";
+  int process = 0;
   bool isLoading = true;
   @override
   void initState() {
@@ -43,22 +48,30 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
     });
   }
 
-  Future<bool> _onWillPop() async {
+  void _onWillPop() async {
     Provider.of<Read>(context, listen: false).setRead();
-    return true;
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: () {
+        _onWillPop();
+        return Future.value(true);
+      },
       child: Scaffold(
         backgroundColor: Colors.grey[100],
+        resizeToAvoidBottomPadding: true,
         appBar: AppBar(
-          title: Text(expertName),
+          backgroundColor: Colors.white,
+          title: Text(
+            expertName,
+            style: TextStyle(color: Colors.black),
+          ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => _onWillPop(),
           ),
         ),
         body: isLoading
@@ -89,10 +102,14 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
                       "principalName": userName,
                       "principalImage": userImage,
                       "expert": expertPhone,
+                      "read": true,
+                      "process": 0,
                     });
                   }
                   return Column(
                     children: [
+                      //GuaranteeWidget(noticeId),
+                      WaitingWidget(),
                       Expanded(
                         child: ListView.builder(
                           reverse: true,

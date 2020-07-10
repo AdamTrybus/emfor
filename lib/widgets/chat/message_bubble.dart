@@ -19,15 +19,14 @@ class MessageBubble extends StatelessWidget {
             constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.8),
             decoration: BoxDecoration(
-              color: isMe ? Colors.white : Colors.amberAccent[300],
-              //borderRadius: BorderRadius.all(Radius.circular(24)),
+              color: isMe ? Colors.white : Colors.amber[400],
             ),
             padding: EdgeInsets.symmetric(
-              vertical: 8,
-              horizontal: 16,
+              vertical: 6,
+              horizontal: 12,
             ),
             margin: EdgeInsets.symmetric(
-              vertical: 4,
+              vertical: 1.8,
               horizontal: 8,
             ),
             child: Text(

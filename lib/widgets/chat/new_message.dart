@@ -43,7 +43,7 @@ class _NewMessageState extends State<NewMessage> {
           child: Row(
             children: <Widget>[
               SizedBox(
-                height: 45,
+                height: 40,
                 child: FloatingActionButton(
                   onPressed: () {},
                   backgroundColor: Colors.amber,
@@ -55,7 +55,7 @@ class _NewMessageState extends State<NewMessage> {
               Expanded(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 8),
-                  height: 50,
+                  height: 45,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.rectangle,
@@ -67,12 +67,10 @@ class _NewMessageState extends State<NewMessage> {
                       ),
                     ],
                   ),
-                  child: TextField(
-                    textAlign: TextAlign.left,
+                  child: TextFormField(
                     controller: _controller,
-                    textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(8),
+                      contentPadding: EdgeInsets.all(12),
                       hintText: 'Wyślij wiadomość..',
                       border: InputBorder.none,
                       suffixIcon: IconButton(

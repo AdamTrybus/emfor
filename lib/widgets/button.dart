@@ -6,19 +6,16 @@ class MyButton extends StatelessWidget {
   final Function onPressed;
 
   const MyButton(
-      {this.text,
-      this.textColor,
-      this.backgroundColor,
-      this.onPressed});
+      {this.text, this.textColor, this.backgroundColor, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      height: 60,
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 25),
       child: RaisedButton(
-        onPressed: onPressed ?? (){},
+        onPressed: onPressed ?? () {},
         color: backgroundColor ?? Colors.black,
         elevation: 4,
         child: Text(
