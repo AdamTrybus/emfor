@@ -1,74 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/widgets/chat/confirm_process.dart';
+import 'package:new_emfor/widgets/chat/initial_process.dart';
 import 'package:new_emfor/widgets/chat/guarantee_window.dart';
+import 'package:new_emfor/widgets/chat/first_process.dart';
+import 'package:new_emfor/widgets/chat/second_process.dart';
+import 'package:new_emfor/widgets/chat/third_process.dart';
 
 class GuaranteeWidget extends StatelessWidget {
-  final noticeId;
-  GuaranteeWidget(this.noticeId);
+  final int process;
+  final bool principal;
+  GuaranteeWidget(this.process, this.principal);
+
+  Widget widget() {
+    if (principal) {
+      switch (process) {
+        case 0:
+          {
+            return InitialProcess();
+          }
+          break;
+        case 1:
+          {
+            return FirstProcess();
+          }
+          break;
+        case 2:
+          {
+            return SecondProcess();
+          }
+          break;
+        case 3:
+          {
+            return ThirdProcess();
+          }
+          break;
+
+        default:
+          {
+            return SizedBox();
+          }
+          break;
+      }
+    } else {
+      switch (process) {
+        case 1:
+          {
+            return ConfirmProcess();
+          }
+          break;
+
+        default:
+          {
+            return SizedBox();
+          }
+          break;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey[500],
-              spreadRadius: 0,
-              blurRadius: 8,
-              offset: Offset(2, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Gwarancja usługi",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            Text(
-              "Aby uzyskać gwarancję musisz podać nam jeszcze kilka informacji, takich jak cena czy termin - skonsultowanych z wykonawcą",
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w400),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            Row(
-              children: [
-                Expanded(child: SizedBox()),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pushNamed(GuaranteeWindow.routeName,
-                        arguments: noticeId);
-                  },
-                  child: Text(
-                    "Uzyskaj gwarancje",
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.amber[600]),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                height: 3,
-                width: 80,
-                child: Divider(
-                  thickness: 3,
-                ),
-              ),
-            ),
-          ],
-        ));
+    return widget();
   }
 }

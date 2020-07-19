@@ -109,7 +109,7 @@ class MyApp extends StatelessWidget {
                 return CircularProgressIndicator();
               default:
                 return snapshot.data.getString("phone") != null
-                    ? ConfirmWindow() //OverviewScreen(snapshot.data.getBool("expert"))
+                    ? OverviewScreen(snapshot.data.getBool("expert"))
                     : AuthScreen();
             }
           },
@@ -127,6 +127,7 @@ class MyApp extends StatelessWidget {
           ChangeProfile.routeName: (ctx) => ChangeProfile(),
           PhoneVerification.routeName: (ctx) => PhoneVerification(),
           GuaranteeWindow.routeName: (ctx) => GuaranteeWindow(),
+          ConfirmWindow.routeName: (ctx) => ConfirmWindow(),
         },
       ),
     );

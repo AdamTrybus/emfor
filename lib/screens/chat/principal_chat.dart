@@ -43,8 +43,8 @@ class _PrincipalChatState extends State<PrincipalChat> {
           )
         : StreamBuilder(
             stream: Firestore.instance
-                .collectionGroup("eagers")
-                .where("principal", isEqualTo: phone)
+                .collection("chat")
+                .where("principalPhone", isEqualTo: phone)
                 .orderBy("createdAt", descending: true)
                 .snapshots(),
             builder: (context, snapshot) {
@@ -57,15 +57,21 @@ class _PrincipalChatState extends State<PrincipalChat> {
               ids.clear();
               snapshot.data.documents.forEach((element) {
                 Chat chat = Chat(
-                    expertImage: element["expertImage"],
-                    expertName: element["expertName"],
-                    estimate: element["estimate"],
-                    noticeTitle: element["noticeTitle"],
-                    noticeId: element["noticeId"],
-                    expertPhone: element["expertPhone"],
-                    principal: element["principal"],
-                    createdAt: element["createdAt"],
-                    read: element["read"]);
+                  chatId: element.documentID,
+                  expertImage: element["expertImage"],
+                  expertName: element["expertName"],
+                  estimate: element["estimate"],
+                  noticeTitle: element["noticeTitle"],
+                  noticeId: element["noticeId"],
+                  expertPhone: element["expertPhone"],
+                  principalPhone: element["principalPhone"],
+                  createdAt: element["createdAt"],
+                  expertRead: element["expertRead"],
+                  principalImage: element["principalImage"],
+                  principalName: element["principalName"],
+                  principalRead: element["principalRead"],
+                  process: element["process"],
+                );
                 var map = {
                   "id": chat.noticeId,
                   "title": chat.noticeTitle,
@@ -200,23 +206,11 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                               Provider.of<Read>(context,
                                                       listen: false)
                                                   .setValues(
-                                                chatId:
-                                                    "${ids[i]["id"]}-${range[x].expertPhone}",
-                                                expertPhone:
-                                                    range[x].expertPhone,
+                                                chat: range[x],
                                                 isExpert: false,
-                                                noticeId: ids[i]["id"],
                                               );
                                               Navigator.of(context).pushNamed(
-                                                  ChatScreenDetail.routeName,
-                                                  arguments: {
-                                                    "noticeId": ids[i]["id"],
-                                                    "noticeTitle": ids[i]
-                                                        ["title"],
-                                                    "phone":
-                                                        range[x].expertPhone,
-                                                    "name": range[x].expertName,
-                                                  });
+                                                  ChatScreenDetail.routeName);
                                             },
                                             child: Text(
                                               "Czat",
@@ -226,7 +220,7 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                             ),
                                           ),
                                         ),
-                                        !range[x].read
+                                        !range[x].principalRead
                                             ? Positioned(
                                                 right: 0,
                                                 top: 0,

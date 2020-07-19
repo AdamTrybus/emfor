@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/chat.dart';
 import 'package:new_emfor/providers/read.dart';
 import 'package:provider/provider.dart';
 import '../chat_detail_screen.dart';
@@ -35,7 +36,7 @@ class _ExpertChatState extends State<ExpertChat> {
         : StreamBuilder(
             stream: Firestore.instance
                 .collection("chat")
-                .where("expert", isEqualTo: phone)
+                .where("expertPhone", isEqualTo: phone)
                 .snapshots(),
             builder: (ctx, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -43,10 +44,26 @@ class _ExpertChatState extends State<ExpertChat> {
                   child: CircularProgressIndicator(),
                 );
               }
-              var chatDocs = [];
-              if (snapshot.data.documents.length > 0) {
-                chatDocs = snapshot.data.documents;
-              }
+              List<Chat> chatDocs = [];
+              snapshot.data.documents.forEach((element) {
+                Chat chat = Chat(
+                  chatId: element.documentID,
+                  expertImage: element["expertImage"],
+                  expertName: element["expertName"],
+                  estimate: element["estimate"],
+                  noticeTitle: element["noticeTitle"],
+                  noticeId: element["noticeId"],
+                  expertPhone: element["expertPhone"],
+                  principalPhone: element["principalPhone"],
+                  createdAt: element["createdAt"],
+                  expertRead: element["expertRead"],
+                  principalImage: element["principalImage"],
+                  principalName: element["principalName"],
+                  principalRead: element["principalRead"],
+                  process: element["process"],
+                );
+                chatDocs.add(chat);
+              });
               return ListView.builder(
                 itemCount: chatDocs.length,
                 itemBuilder: (ctx, i) => Card(
@@ -58,7 +75,7 @@ class _ExpertChatState extends State<ExpertChat> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          chatDocs[i]["title"],
+                          chatDocs[i].noticeTitle,
                           style: TextStyle(
                             fontFamily: "Quicksand",
                             fontSize: 22,
@@ -73,9 +90,9 @@ class _ExpertChatState extends State<ExpertChat> {
                           children: [
                             CircleAvatar(
                               backgroundImage:
-                                  chatDocs[i]["principalImage"] != null
+                                  chatDocs[i].principalImage != null
                                       ? NetworkImage(
-                                          chatDocs[i]["principalImage"],
+                                          chatDocs[i].principalImage,
                                         )
                                       : AssetImage(
                                           "assets/user_image.png",
@@ -84,7 +101,7 @@ class _ExpertChatState extends State<ExpertChat> {
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                chatDocs[i]["principalName"],
+                                chatDocs[i].principalName,
                                 style: Theme.of(context).textTheme.overline,
                               ),
                             ),
@@ -97,21 +114,11 @@ class _ExpertChatState extends State<ExpertChat> {
                                     onPressed: () {
                                       Provider.of<Read>(context, listen: false)
                                           .setValues(
-                                        chatId: chatDocs[i].documentID,
-                                        expertPhone: phone,
+                                        chat: chatDocs[i],
                                         isExpert: true,
-                                        noticeId: chatDocs[i]["id"],
                                       );
                                       Navigator.of(context).pushNamed(
-                                          ChatScreenDetail.routeName,
-                                          arguments: {
-                                            "noticeId": chatDocs[i]["id"],
-                                            "phone": phone,
-                                            "name": chatDocs[i]
-                                                ["principalName"],
-                                            "chatId": chatDocs[i].documentID,
-                                            "process": chatDocs[i]["process"],
-                                          });
+                                          ChatScreenDetail.routeName);
                                     },
                                     child: Text(
                                       "Czat",
@@ -121,7 +128,7 @@ class _ExpertChatState extends State<ExpertChat> {
                                     color: Colors.black,
                                   ),
                                 ),
-                                !chatDocs[i]["read"]
+                                !chatDocs[i].expertRead
                                     ? Positioned(
                                         right: 0,
                                         top: 0,

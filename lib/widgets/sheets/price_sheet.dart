@@ -40,10 +40,8 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
     var prefs = await SharedPreferences.getInstance();
     Notice notice = widget.notice;
     Firestore.instance
-        .collection("notices")
-        .document(notice.id)
-        .collection("eagers")
-        .document(prefs.getString("phone"))
+        .collection("chat")
+        .document("${notice.id}-${notice.userPhone}")
         .setData({
       "expertImage": prefs.getString("image"),
       "expertName": prefs.getString("name"),
@@ -51,9 +49,13 @@ class _PriceSheetState extends State<PriceSheet> with TickerProviderStateMixin {
       "noticeTitle": notice.service,
       "noticeId": notice.id,
       "expertPhone": prefs.getString("phone"),
-      "principal": notice.userPhone,
+      "principalPhone": notice.userPhone,
       "createdAt": notice.createdAt,
-      "read":true,
+      "expertRead": true,
+      "principalImage": notice.userImage,
+      "principalName": notice.userName,
+      "principalRead": false,
+      "process": 0,
     });
     Navigator.of(context).pushReplacementNamed("/");
   }

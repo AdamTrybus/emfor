@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:new_emfor/providers/chat.dart';
 
 class Read with ChangeNotifier {
-  String _expertPhone, _noticeId, _chatId;
+  Chat _chat;
   bool _isExpert;
+  Chat get chat {
+    return _chat;
+  }
 
-  void setValues(
-      {String expertPhone, String noticeId, String chatId, bool isExpert}) {
-    _expertPhone = expertPhone;
-    _noticeId = noticeId;
-    _chatId = chatId;
+  void setValues({Chat chat, bool isExpert}) {
+    _chat = chat;
     _isExpert = isExpert;
+  }
+
+  void setChat(Chat chat) {
+    _chat = chat;
   }
 
   void setNotRead() {
     if (_isExpert) {
       Firestore.instance
-          .collection("notices")
-          .document(_noticeId)
-          .collection("eagers")
-          .document(_expertPhone)
-          .updateData({"read": false});
+          .collection("chat")
+          .document(_chat.chatId)
+          .updateData({"principalRead": false});
     } else {
       Firestore.instance
           .collection("chat")
-          .document(_chatId)
-          .updateData({"read": false});
+          .document(_chat.chatId)
+          .updateData({"expertRead": false});
     }
   }
 
@@ -33,15 +36,13 @@ class Read with ChangeNotifier {
     if (_isExpert) {
       Firestore.instance
           .collection("chat")
-          .document(_chatId)
-          .updateData({"read": true});
+          .document(_chat.chatId)
+          .updateData({"expertRead": true});
     } else {
       Firestore.instance
-          .collection("notices")
-          .document(_noticeId)
-          .collection("eagers")
-          .document(_expertPhone)
-          .updateData({"read": true});
+          .collection("chat")
+          .document(_chat.chatId)
+          .updateData({"principalRead": true});
     }
   }
 }
