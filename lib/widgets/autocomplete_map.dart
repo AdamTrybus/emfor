@@ -29,13 +29,17 @@ class _AutocompleteMapState extends State<AutocompleteMap> {
         final lng = detail.result.geometry.location.lng;
         coordinates = new Coordinates(lat, lng);
       }
-      var addresses =
-          await Geocoder.local.findAddressesFromCoordinates(coordinates);
-      var first = addresses.first;
-      userLocation =
-          "${first.thoroughfare} ${first.subThoroughfare ?? ""}, ${first.locality}";
+      // var addresses =
+      //     await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      // var first = addresses.first;
+      // userLocation =
+      //     "${first.thoroughfare} ${first.subThoroughfare ?? ""}, ${first.locality}";
       Provider.of<Work>(context, listen: false)
-          .setNotice("place", userLocation);
+          .setNotice("place", p.description);
+      Provider.of<Work>(context, listen: false)
+          .setNotice("lat", coordinates.latitude.toString());
+      Provider.of<Work>(context, listen: false)
+          .setNotice("lng", coordinates.longitude.toString());
       print(userLocation);
     } catch (error) {
       return;
@@ -82,7 +86,7 @@ class _AutocompleteMapState extends State<AutocompleteMap> {
           Prediction p = await PlacesAutocomplete.show(
               context: context,
               apiKey: "AIzaSyB2RixKsuCGgMrF7n7BgrGKqCzuYaoU0MY",
-              mode: Mode.overlay, // Mode.fullscreen
+              mode: Mode.overlay,
               language: "pl",
               components: [new Component(Component.country, "pl")]);
           _getUserLocation(p);

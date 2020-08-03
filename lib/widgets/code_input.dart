@@ -19,11 +19,11 @@ class _CodeInputState extends State<CodeInput> {
   bool firstBuild = true, loading = false, login;
   var firebaseAuth = FirebaseAuth.instance;
 
-  void onFailed() {
+  void onFailed(Object e) {
     Toast.show(
-      "Błąd",
+      e,
       context,
-      duration: Toast.LENGTH_SHORT,
+      duration: 10,
     );
     Navigator.of(context).pop();
     setState(() {
@@ -34,7 +34,7 @@ class _CodeInputState extends State<CodeInput> {
   void signIn(AuthCredential authCredential) {
     try {
       firebaseAuth.signInWithCredential(authCredential).catchError((e) {
-        onFailed();
+        onFailed(e);
       }).then((user) async {
         if (user.user != null) {
           Firestore.instance
@@ -49,7 +49,8 @@ class _CodeInputState extends State<CodeInput> {
               prefs.setString("name", value.data["name"]);
               prefs.setBool("expert", value.data["expert"]);
               prefs.setString("imageUrl", value.data["imageUrl"]);
-              Navigator.of(context).pushNamed("/");
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  "/", (Route<dynamic> route) => false);
             } else {
               if (login) {
                 Toast.show(
@@ -59,17 +60,18 @@ class _CodeInputState extends State<CodeInput> {
                 );
                 Navigator.of(context).popUntil((route) => route.isFirst);
               } else {
-                Navigator.of(context)
-                    .pushNamed(PersonalInfo.routeName, arguments: phone);
+                Navigator.of(context).pushReplacementNamed(
+                    PersonalInfo.routeName,
+                    arguments: phone);
               }
             }
           });
         } else {
-          onFailed();
+          onFailed("tutaj nie powinno byc bledu");
         }
       });
     } catch (e) {
-      onFailed();
+      onFailed(e);
     }
   }
 
@@ -80,7 +82,7 @@ class _CodeInputState extends State<CodeInput> {
 
     final PhoneVerificationFailed verificationfailed =
         (AuthException authException) {
-      onFailed();
+      onFailed(authException.message);
     };
 
     final PhoneCodeSent smsSent = (String verId, [int forceResend]) {
@@ -91,7 +93,7 @@ class _CodeInputState extends State<CodeInput> {
     };
 
     final PhoneCodeAutoRetrievalTimeout autoTimeout = (String verId) {
-      onFailed();
+      onFailed("czas minął");
     };
 
     await FirebaseAuth.instance.verifyPhoneNumber(

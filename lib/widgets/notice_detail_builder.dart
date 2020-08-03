@@ -1,16 +1,35 @@
+import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:new_emfor/providers/notice.dart';
 import 'package:new_emfor/widgets/list_item.dart';
 
-class InfoDetailBuilder extends StatelessWidget {
+class InfoDetailBuilder extends StatefulWidget {
   InfoDetailBuilder({this.notice, this.height, this.estimate = ""});
   final Notice notice;
   final double height;
   final String estimate;
 
+  @override
+  _InfoDetailBuilderState createState() => _InfoDetailBuilderState();
+}
+
+class _InfoDetailBuilderState extends State<InfoDetailBuilder> {
+  BitmapDescriptor pinLocationIcon;
+  Set<Marker> _markers = {};
+  Completer<GoogleMapController> _controller = Completer();
+  @override
+  void initState() {
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(devicePixelRatio: 2.5), 'assets/marker.png')
+        .then((onValue) {
+      pinLocationIcon = onValue;
+    });
+  }
+
   Widget varieties(context) {
-    var variety = notice.variety;
+    var variety = widget.notice.variety;
     var keys = variety.keys.toList();
     var values = variety.values.toList();
     return MediaQuery.removePadding(
@@ -30,31 +49,101 @@ class InfoDetailBuilder extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: height * 0.45,
+          height: widget.height * 0.45,
           child: GoogleMap(
             mapType: MapType.normal,
             zoomControlsEnabled: false,
+            markers: _markers,
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+              setState(() {
+                _markers.add(Marker(
+                    markerId: MarkerId("id"),
+                    position: LatLng(
+                      double.parse(widget.notice.lat),
+                      double.parse(widget.notice.lng),
+                    ),
+                    icon: pinLocationIcon));
+              });
+            },
             initialCameraPosition: CameraPosition(
-              target: LatLng(52.237049, 21.017532),
+              target: LatLng(
+                double.parse(widget.notice.lat),
+                double.parse(widget.notice.lng),
+              ),
               zoom: 16,
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
+          padding:
+              const EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
           child: Column(children: [
-            estimate.isNotEmpty
-                ? ListItem(baseText: "Cena", infoText: estimate)
+            widget.estimate.isNotEmpty
+                ? ListItem(baseText: "Cena", infoText: widget.estimate)
                 : SizedBox(),
-            ListItem(baseText: "Usługa", infoText: notice.service),
-            ListItem(baseText: "Miejsce", infoText: notice.place),
+            ListItem(baseText: "Usługa", infoText: widget.notice.service),
+            ListItem(baseText: "Miejsce", infoText: widget.notice.place),
             ListItem(
               baseText: "Termin",
-              infoText: notice.time,
+              infoText: widget.notice.time,
             ),
             varieties(context),
             ListItem(
-                baseText: "Opis", divider: false, infoText: notice.description),
+                baseText: "Opis",
+                divider: false,
+                infoText: widget.notice.description),
+            SizedBox(
+              height: 70,
+              child: ListView.builder(
+                  //padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  scrollDirection: Axis.horizontal,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: widget.notice.files.length,
+                  itemBuilder: (ctx, i) {
+                    var l = widget.notice.files[i]
+                        .toString()
+                        .split(".")
+                        .last
+                        .split("?")
+                        .first;
+                    String asset = "";
+                    if (l == "jpg" || l == "jpeg") {
+                      asset = "jpg.png";
+                    } else if (l == "pdf") {
+                      asset = "pdf.png";
+                    } else if (l == "png") {
+                      asset = "png.png";
+                    } else if (l == "tiff") {
+                      asset = "tiff.png";
+                    } else if (l == "doc") {
+                      asset = "doc.png";
+                    } else if (l == "txt") {
+                      asset = "txt.png";
+                    }
+                    return Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 4.0,
+                      ),
+                      child: asset.isNotEmpty
+                          ? InkWell(
+                              onTap: () => launch(widget.notice.files[i]),
+                              child: Image.asset(
+                                "assets/$asset",
+                                fit: BoxFit.cover,
+                                height: 70,
+                                width: 50,
+                              ),
+                            )
+                          : SizedBox(
+                              height: 70,
+                              width: 50,
+                              child: CircularProgressIndicator(),
+                            ),
+                    );
+                  }),
+            ),
           ]),
         ),
       ],

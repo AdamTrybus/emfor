@@ -23,7 +23,7 @@ class _PersonalInfoState extends State<PersonalInfo>
     with TickerProviderStateMixin {
   String gmail, name, description, category;
   File imageFile;
-  List<File> files;
+  List<File> files = [];
   bool switched = false;
   final _form = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -81,13 +81,13 @@ class _PersonalInfoState extends State<PersonalInfo>
       }
       map.putIfAbsent("category", () => category);
       map.putIfAbsent("description", () => description);
-      if (files != null) {
+      if (files.isNotEmpty) {
         files.forEach((file) async {
           await FirebaseStorage.instance
               .ref()
               .child(phone)
               .child("documents")
-              .child(file.toString().replaceAll("/", ""))
+              .child(file.path.replaceAll("/", ""))
               .putFile(file)
               .onComplete;
         });
@@ -95,13 +95,14 @@ class _PersonalInfoState extends State<PersonalInfo>
         Toast.show(
           "Dodaj jeszcze pliki potwierdzające twoje umiejętności",
           context,
-          duration: Toast.LENGTH_LONG,
+          duration: 8,
         );
         return;
       }
     }
     await databaseReference.collection("users").document(phone).setData(map);
-    Navigator.of(context).pushNamed("/");
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false);
   }
 
   void _pickedImage(File image) {
@@ -115,12 +116,22 @@ class _PersonalInfoState extends State<PersonalInfo>
   }
 
   void _pickedFiles(List<File> f) {
-    files = f;
-    files.forEach((file) {
-      if (file.lengthSync() > 10240) {
-        print("siema byku $file");
+    f.forEach((file) {
+      List<String> g = [];
+      files.forEach((element) => g.add(element.path));
+      if (!g.contains(file.path)) {
+        if (file.lengthSync() > 20000000) {
+          Toast.show("${file.path} - za duży rozmiar pliku", context,
+              duration: 8);
+        } else if (files.length >= 5) {
+          Toast.show("Przekroczono liczbę plików (max 5)", context,
+              duration: 8);
+        } else {
+          files.add(file);
+        }
       }
     });
+    setState(() {});
   }
 
   @override
@@ -228,6 +239,7 @@ class _PersonalInfoState extends State<PersonalInfo>
               ),
               switched
                   ? Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           margin: const EdgeInsets.symmetric(
@@ -263,8 +275,8 @@ class _PersonalInfoState extends State<PersonalInfo>
                           ),
                         ),
                         Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 12),
                           child: TextFormField(
                             style: Theme.of(context).textTheme.subhead,
                             decoration: InputDecoration(
@@ -288,12 +300,81 @@ class _PersonalInfoState extends State<PersonalInfo>
                             },
                           ),
                         ),
-                        FilesPicker(_pickedFiles)
+                        SizedBox(
+                          height: 70,
+                          child: ListView(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              SizedBox(
+                                height: 50,
+                                child: ListView.builder(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 4, vertical: 2),
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: files.length,
+                                    itemBuilder: (ctx, i) {
+                                      var l = files[i].path.split(".").last;
+                                      String asset = "";
+                                      if (l == "jpg" || l == "jpeg") {
+                                        asset = "jpg.png";
+                                      } else if (l == "pdf") {
+                                        asset = "pdf.png";
+                                      } else if (l == "png") {
+                                        asset = "png.png";
+                                      } else if (l == "tiff") {
+                                        asset = "tiff.png";
+                                      } else if (l == "doc") {
+                                        asset = "doc.png";
+                                      } else if (l == "txt") {
+                                        asset = "txt.png";
+                                      }
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 3.0),
+                                        child: Stack(children: [
+                                          asset.isNotEmpty
+                                              ? Image.asset(
+                                                  "assets/$asset",
+                                                  fit: BoxFit.cover,
+                                                  height: 70,
+                                                  width: 50,
+                                                )
+                                              : SizedBox(),
+                                          Positioned(
+                                            left: 0,
+                                            top: 0,
+                                            child: InkWell(
+                                              onTap: () {
+                                                setState(
+                                                  () {
+                                                    files.remove(files[i]);
+                                                  },
+                                                );
+                                              },
+                                              child: Icon(
+                                                Icons.cancel,
+                                              ),
+                                            ),
+                                          ),
+                                        ]),
+                                      );
+                                    }),
+                              ),
+                              if (files.length < 5) FilesPicker(_pickedFiles),
+                            ],
+                          ),
+                        ),
                       ],
                     )
                   : SizedBox(),
               SizedBox(
-                height: 20,
+                height: 25,
               ),
               MyButton(
                 onPressed: () => _saveForm(context),

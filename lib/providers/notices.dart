@@ -27,48 +27,18 @@ class Notices with ChangeNotifier {
           service: notice["service"],
           variety: notice["variety"],
           description: notice["description"] ?? "",
-          files: notice["files"],
+          files: notice["files"] ?? [],
           place: notice["place"],
           time: notice["time"],
           userPhone: notice["userPhone"],
           createdAt: notice["createdAt"],
           userName: notice["userName"],
           userImage: notice["userImage"],
+          lat: notice["lat"],
+          lng: notice["lng"],
         ));
       });
     });
     notifyListeners();
-  }
-
-  Future<void> fetchAndSetBid() async {
-    _items = [];
-    var prefs = await SharedPreferences.getInstance();
-    String phone = prefs.getString("phone");
-    final databaseReference = Firestore.instance;
-    await databaseReference
-        .collection("notices")
-        .where("userPhone", isEqualTo: phone)
-        .orderBy("createdAt", descending: true)
-        .getDocuments()
-        .then((QuerySnapshot snapshot) {
-      snapshot.documents.forEach((f) {
-        dynamic notice = f.data;
-        if (notice["userPhone"] == phone) {}
-        _items.add(Notice(
-          id: f.documentID,
-          service: notice["service"],
-          variety: notice["variety"],
-          description: notice["description"] ?? "",
-          files: notice["files"],
-          place: notice["place"],
-          time: notice["time"],
-          userPhone: notice["userPhone"],
-          createdAt: notice["createdAt"],
-          userName: notice["userName"],
-          userImage: notice["userImage"],
-        ));
-      });
-      notifyListeners();
-    });
   }
 }

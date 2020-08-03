@@ -38,6 +38,8 @@
 	<string>Let us to use your camera</string>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

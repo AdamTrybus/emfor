@@ -56,7 +56,8 @@ class _AuthScreenState extends State<AuthScreen> {
           MyButton(
             text: "Zaloguj",
             onPressed: () {
-              Navigator.of(context).pushNamed(PhoneVerification.routeName,arguments: true);
+              Navigator.of(context)
+                  .pushNamed(PhoneVerification.routeName, arguments: true);
             },
           ),
           SizedBox(
@@ -67,7 +68,8 @@ class _AuthScreenState extends State<AuthScreen> {
             textColor: Colors.black,
             backgroundColor: Colors.grey[50],
             onPressed: () {
-              Navigator.of(context).pushNamed(PhoneVerification.routeName,arguments: false);
+              Navigator.of(context)
+                  .pushNamed(PhoneVerification.routeName, arguments: false);
             },
           ),
           Expanded(child: SizedBox()),

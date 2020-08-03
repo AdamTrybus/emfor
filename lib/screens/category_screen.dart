@@ -60,7 +60,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       await Provider.of<Work>(context, listen: false)
                           .setSubCollection(0);
                       Navigator.of(context)
-                          .pushNamed(SubcategoryScreen.routeName);
+                          .pushReplacementNamed(SubcategoryScreen.routeName);
                     },
                   ),
                 ),

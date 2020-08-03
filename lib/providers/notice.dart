@@ -5,15 +5,19 @@ class Notice {
   final String service;
   final variety;
   final String description;
-  final String files;
+  final List<dynamic> files;
   final String time;
   final String place;
   final String userPhone;
   final String createdAt;
   final String userName;
   final String userImage;
+  final String lat;
+  final String lng;
 
   Notice({
+    @required this.lat,
+    @required this.lng,
     @required this.id,
     @required this.service,
     @required this.variety,

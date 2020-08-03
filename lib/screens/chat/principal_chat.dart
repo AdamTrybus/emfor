@@ -60,7 +60,6 @@ class _PrincipalChatState extends State<PrincipalChat> {
                   chatId: element.documentID,
                   expertImage: element["expertImage"],
                   expertName: element["expertName"],
-                  estimate: element["estimate"],
                   noticeTitle: element["noticeTitle"],
                   noticeId: element["noticeId"],
                   expertPhone: element["expertPhone"],
@@ -153,46 +152,16 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                                 ),
                                     ),
                                     SizedBox(
-                                      width: 6,
+                                      width: 10,
                                     ),
                                     Expanded(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              range[x].expertName,
-                                              textAlign: TextAlign.left,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .button,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 6,
-                                          ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Align(
-                                              alignment: AlignmentDirectional
-                                                  .centerStart,
-                                              child: FittedBox(
-                                                fit: BoxFit.scaleDown,
-                                                child: Text(
-                                                  range[x].estimate,
-                                                  maxLines: 1,
-                                                  textAlign: TextAlign.left,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subhead,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                      flex: 2,
+                                      child: Text(
+                                        range[x].expertName,
+                                        textAlign: TextAlign.left,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            Theme.of(context).textTheme.button,
                                       ),
                                     ),
                                     Stack(
@@ -203,6 +172,11 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                           child: RaisedButton(
                                             color: Colors.black,
                                             onPressed: () {
+                                              range = notices
+                                                  .where((element) =>
+                                                      element.noticeId ==
+                                                      ids[i]["id"])
+                                                  .toList();
                                               Provider.of<Read>(context,
                                                       listen: false)
                                                   .setValues(

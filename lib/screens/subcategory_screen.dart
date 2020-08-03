@@ -32,7 +32,7 @@ class _SubcategoryScreenState extends State<SubcategoryScreen> {
       Provider.of<Work>(context, listen: false).setSubCollection(i);
     } else if (i == length) {
       Provider.of<Work>(context, listen: false).publish();
-      Navigator.of(context).pushReplacementNamed("/");
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } else {
       setState(() {});
     }

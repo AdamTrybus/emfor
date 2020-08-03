@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/read.dart';
+import 'package:provider/provider.dart';
 
 class ShadowSheet extends StatelessWidget {
   final Color color;
@@ -7,7 +9,7 @@ class ShadowSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.only(left: 10, right: 10, top: 10),
       decoration: BoxDecoration(
         color: color,
         boxShadow: [
@@ -22,16 +24,19 @@ class ShadowSheet extends StatelessWidget {
       child: Column(
         children: [
           widget,
-          SizedBox(
-            height: 16,
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: SizedBox(
-              height: 3,
-              width: 80,
-              child: Divider(
-                thickness: 3,
+          FlatButton(
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onPressed: () =>
+                Provider.of<Read>(context, listen: false).setExpanded(),
+            child: Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                width: 80,
+                child: Divider(
+                  thickness: 3,
+                ),
               ),
             ),
           ),

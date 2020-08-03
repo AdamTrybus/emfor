@@ -50,7 +50,6 @@ class _ExpertChatState extends State<ExpertChat> {
                   chatId: element.documentID,
                   expertImage: element["expertImage"],
                   expertName: element["expertName"],
-                  estimate: element["estimate"],
                   noticeTitle: element["noticeTitle"],
                   noticeId: element["noticeId"],
                   expertPhone: element["expertPhone"],

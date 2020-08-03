@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/read.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +49,34 @@ class _NewMessageState extends State<NewMessage> {
               SizedBox(
                 height: 40,
                 child: FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    var file = await FilePicker.getFile(
+                        type: FileType.custom,
+                        allowedExtensions: [
+                          "tiff",
+                          "jpg",
+                          "jpeg",
+                          "doc",
+                          "pdf",
+                          "png",
+                          "txt"
+                        ]);
+                    final ref = FirebaseStorage.instance
+                        .ref()
+                        .child(widget.chatId)
+                        .child(file.path.replaceAll("/", ""));
+                    await ref.putFile(file).onComplete;
+                    var url = await ref.getDownloadURL();
+                    await Firestore.instance
+                        .collection("chat")
+                        .document(widget.chatId)
+                        .collection("messages")
+                        .add({
+                      'file': url,
+                      'createdAt': Timestamp.now(),
+                      'userPhone': widget.userPhone,
+                    });
+                  },
                   backgroundColor: Colors.amber,
                   child: Icon(
                     Icons.add,

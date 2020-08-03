@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_emfor/screens/chat/expert_chat.dart';
+import 'package:new_emfor/screens/depute_screen.dart';
 import '../screens/chat/principal_chat.dart';
 import '../screens/home_screen.dart';
 import '../screens/notice_screen.dart';
@@ -30,6 +31,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
               'title': 'Ogłoszenia',
             },
       {
+        'page': DeputeScreen(),
+        'title': 'Ustawienia',
+      },
+      {
         'page': SettingsScreen(),
         'title': 'Ustawienia',
       },
@@ -41,6 +46,7 @@ class _OverviewScreenState extends State<OverviewScreen> {
       selectedIndex = index;
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +86,16 @@ class _OverviewScreenState extends State<OverviewScreen> {
             title: FittedBox(
               child: Text(
                 !widget.isExpert ? "Dodaj" : "Ogłoszenia",
+              ),
+            ),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.event_available,
+            ),
+            title: FittedBox(
+              child: Text(
+                "Zatwierdzone",
               ),
             ),
           ),

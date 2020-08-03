@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/deputes.dart';
 import 'package:new_emfor/widgets/chat/confirm_window.dart';
 import 'package:new_emfor/widgets/chat/guarantee_window.dart';
+import 'package:new_emfor/widgets/depute/depute_detail_info.dart';
+import 'package:new_emfor/widgets/depute/depute_info.dart';
+import 'package:new_emfor/widgets/depute/renegotiate_window.dart';
+import 'package:new_emfor/widgets/depute/side_window.dart';
+import 'package:new_emfor/widgets/network_view.dart';
 import './providers/read.dart';
 import './screens/depute_detail_screen.dart';
 import './screens/depute_screen.dart';
@@ -38,6 +44,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(
           value: Read(),
+        ),
+        ChangeNotifierProvider.value(
+          value: Deputes(),
         ),
       ],
       child: MaterialApp(
@@ -128,6 +137,10 @@ class MyApp extends StatelessWidget {
           PhoneVerification.routeName: (ctx) => PhoneVerification(),
           GuaranteeWindow.routeName: (ctx) => GuaranteeWindow(),
           ConfirmWindow.routeName: (ctx) => ConfirmWindow(),
+          DeputeDetailInfo.routeName: (ctx) => DeputeDetailInfo(),
+          RenegotiateWindow.routeName: (ctx) => RenegotiateWindow(),
+          SideWindow.routeName: (ctx) => SideWindow(),
+          NetworkView.routeName: (ctx) => NetworkView(),
         },
       ),
     );

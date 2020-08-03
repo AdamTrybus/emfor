@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/chat.dart';
-import 'package:new_emfor/widgets/chat/first_process.dart';
-import 'package:new_emfor/widgets/confirm_dialog.dart';
 import 'package:new_emfor/widgets/chat/guarantee_widget.dart';
 import '../providers/read.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +17,8 @@ class ChatScreenDetail extends StatefulWidget {
 class _ChatScreenDetailState extends State<ChatScreenDetail> {
   Chat chat;
   bool isLoading = true;
-  String phone;
+  bool isExpert;
+  String phone, name;
 
   @override
   void initState() {
@@ -28,6 +27,8 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
       var prefs = await SharedPreferences.getInstance();
       phone = prefs.getString("phone");
       chat = Provider.of<Read>(context, listen: false).chat;
+      isExpert = phone == chat.expertPhone;
+      name = isExpert ? chat.principalName : chat.expertName;
       setState(() {
         isLoading = false;
       });
@@ -52,13 +53,53 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Text(
-            chat != null ? chat.expertName : "",
+            isLoading ? "" : name,
             style: TextStyle(color: Colors.black),
           ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () => _onWillPop(),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.more_horiz),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        elevation: 4,
+                        content: Text(
+                          "Czy napewno chcesz usunąć konwersacje ?",
+                          style: Theme.of(context).textTheme.subhead,
+                        ),
+                        actions: [
+                          FlatButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text(
+                                "Nie",
+                                style: Theme.of(context).textTheme.title,
+                              )),
+                          FlatButton(
+                              onPressed: () {
+                                Firestore.instance
+                                    .collection("chat")
+                                    .document(chat.chatId)
+                                    .delete();
+                                int count = 0;
+                                Navigator.of(context)
+                                    .popUntil((_) => count++ >= 2);
+                              },
+                              child: Text(
+                                "Tak",
+                                style: Theme.of(context).textTheme.title,
+                              ))
+                        ],
+                      );
+                    });
+              },
+            ),
+          ],
         ),
         body: isLoading
             ? Center(
@@ -100,6 +141,7 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
                               reverse: true,
                               itemCount: chatDocs.length,
                               itemBuilder: (ctx, index) => MessageBubble(
+                                chatDocs[index]["file"],
                                 chatDocs[index]["text"],
                                 chatDocs[index]["userPhone"] == phone,
                               ),
