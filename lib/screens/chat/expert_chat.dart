@@ -37,6 +37,9 @@ class _ExpertChatState extends State<ExpertChat> {
             stream: Firestore.instance
                 .collection("chat")
                 .where("expertPhone", isEqualTo: phone)
+                .where("process", isLessThan: 4)
+                .orderBy("process", descending: true)
+                .orderBy("createdAt", descending: true)
                 .snapshots(),
             builder: (ctx, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {

@@ -16,12 +16,12 @@ class CodeInput extends StatefulWidget {
 
 class _CodeInputState extends State<CodeInput> {
   String verificationId, code, phone;
-  bool firstBuild = true, loading = false, login;
+  bool firstBuild = true, loading = false;
   var firebaseAuth = FirebaseAuth.instance;
 
   void onFailed(Object e) {
     Toast.show(
-      e,
+      e.toString(),
       context,
       duration: 10,
     );
@@ -42,7 +42,7 @@ class _CodeInputState extends State<CodeInput> {
               .document(phone)
               .get()
               .then((value) async {
-            if (value.exists && login) {
+            if (value.exists) {
               var prefs = await SharedPreferences.getInstance();
               prefs.setString("phone", phone);
               prefs.setString("gmail", value.data["gmail"]);
@@ -52,18 +52,8 @@ class _CodeInputState extends State<CodeInput> {
               Navigator.of(context).pushNamedAndRemoveUntil(
                   "/", (Route<dynamic> route) => false);
             } else {
-              if (login) {
-                Toast.show(
-                  "Załóż najpierw konto",
-                  context,
-                  duration: Toast.LENGTH_LONG,
-                );
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              } else {
-                Navigator.of(context).pushReplacementNamed(
-                    PersonalInfo.routeName,
-                    arguments: phone);
-              }
+              Navigator.of(context).pushReplacementNamed(PersonalInfo.routeName,
+                  arguments: phone);
             }
           });
         } else {
@@ -113,9 +103,7 @@ class _CodeInputState extends State<CodeInput> {
 
   @override
   Widget build(BuildContext context) {
-    var map = ModalRoute.of(context).settings.arguments as Map<String, Object>;
-    phone = map["phone"];
-    login = map["login"];
+    phone = ModalRoute.of(context).settings.arguments;
     if (firstBuild) {
       loading = true;
       firstBuild = false;
@@ -123,81 +111,117 @@ class _CodeInputState extends State<CodeInput> {
     }
     return Scaffold(
       resizeToAvoidBottomPadding: true,
-      body: loading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Column(
-              children: [
-                SizedBox(
-                  height: 25,
-                ),
-                Text(
-                  "Wprowadź kod",
-                  style: Theme.of(context).textTheme.display1,
-                ),
-                SizedBox(
-                  height: 6,
-                ),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
-                    ),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: "Kod został wysłany do ",
-                        style: Theme.of(context).textTheme.subtitle,
-                      ),
-                      TextSpan(
-                        text: phone,
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                    ],
+      body: SafeArea(
+        child: loading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  SizedBox(
+                    height: 15,
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: PinCodeTextField(
-                      length: 6,
-                      onChanged: (value) => code = value,
-                      textInputType: TextInputType.number,
-                      animationType: AnimationType.fade,
-                      pinTheme: PinTheme(
-                        borderRadius: BorderRadius.circular(10),
-                        borderWidth: 2,
-                        fieldHeight: 50,
-                        fieldWidth: 50,
-                        shape: PinCodeFieldShape.underline,
-                        selectedFillColor: Colors.grey[200],
-                        inactiveFillColor: Colors.grey[300],
-                        disabledColor: Colors.grey[300],
-                        inactiveColor: Colors.grey[300],
-                        activeColor: Colors.grey[300],
-                        selectedColor: Colors.grey[300],
-                        activeFillColor: Colors.grey[300],
-                      ),
-                      backgroundColor: Colors.transparent,
-                      animationDuration: Duration(milliseconds: 300),
-                      enableActiveFill: true,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    )),
-                Expanded(child: SizedBox()),
-                MyButton(
-                  onPressed: () {
-                    _signInWithPhoneNumber(code);
-                  },
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-              ],
-            ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14.0),
+                    child: Row(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: FloatingActionButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 18.0,
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Wprowadź kod",
+                                  style: Theme.of(context).textTheme.display1,
+                                ),
+                                SizedBox(
+                                  height: 6,
+                                ),
+                                RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text: "Kod został wysłany do ",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle,
+                                      ),
+                                      TextSpan(
+                                        text: phone,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: PinCodeTextField(
+                        length: 6,
+                        onChanged: (value) => code = value,
+                        textInputType: TextInputType.number,
+                        animationType: AnimationType.fade,
+                        pinTheme: PinTheme(
+                          borderRadius: BorderRadius.circular(10),
+                          borderWidth: 2,
+                          fieldHeight: 50,
+                          fieldWidth: 50,
+                          shape: PinCodeFieldShape.underline,
+                          selectedFillColor: Colors.grey[200],
+                          inactiveFillColor: Colors.grey[300],
+                          disabledColor: Colors.grey[300],
+                          inactiveColor: Colors.grey[300],
+                          activeColor: Colors.grey[300],
+                          selectedColor: Colors.grey[300],
+                          activeFillColor: Colors.grey[300],
+                        ),
+                        backgroundColor: Colors.transparent,
+                        animationDuration: Duration(milliseconds: 300),
+                        enableActiveFill: true,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      )),
+                  Expanded(child: SizedBox()),
+                  MyButton(
+                    onPressed: () {
+                      _signInWithPhoneNumber(code);
+                    },
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

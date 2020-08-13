@@ -14,13 +14,6 @@ class SecondProcess extends StatelessWidget {
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Gwarancja usługi",
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-          ),
-          SizedBox(
-            height: 6,
-          ),
           if (exp)
             Column(
               children: [

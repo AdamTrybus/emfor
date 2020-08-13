@@ -45,6 +45,8 @@ dependencies:
   flutter_spinkit: ^3.1.0
   webview_flutter: ^0.3.22+1
   url_launcher: ^5.5.0
+  rating_bar: ^0.2.0
+  flutter_rating_bar: ^3.0.1+1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
@@ -85,12 +87,15 @@ flutter:
     - assets/emfor_logo.png
     - assets/marker.png
     - assets/txt.png
-    - assets/png.png
     - assets/doc.png
     - assets/pdf.png
     - assets/jpg.png
     - assets/tiff.png
     - assets/add_file.png
+    - assets/poland_icon.png
+    - assets/other_problem.png
+    - assets/leak_pipe.png
+    - assets/timeout.png
   fonts:
     - family: Lato
       fonts:

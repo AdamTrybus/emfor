@@ -18,13 +18,6 @@ class ThirdProcess extends StatelessWidget {
       widget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Gwarancja usługi",
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-          ),
-          SizedBox(
-            height: 6,
-          ),
           if (exp)
             Column(
               children: [
@@ -92,40 +85,33 @@ class ThirdProcess extends StatelessWidget {
                               doc.reference.delete();
                             }
                           });
-                          await Firestore.instance
-                              .collection("chat")
-                              .document(chat.chatId)
-                              .get()
-                              .then((value) {
-                            var e = value.data;
-                            var depute = Depute(
-                              chatId: value.documentID,
-                              expertImage: e["expertImage"],
-                              expertName: e["expertName"],
-                              noticeTitle: e["noticeTitle"],
-                              noticeId: e["noticeId"],
-                              expertPhone: e["expertPhone"],
-                              principalPhone: e["principalPhone"],
-                              createdAt: e["createdAt"],
-                              expertRead: e["expertRead"],
-                              principalImage: e["principalImage"],
-                              principalName: e["principalName"],
-                              principalRead: e["principalRead"],
-                              process: e["process"],
-                              attentions: e["attentions"],
-                              estimate: e["estimate"],
-                              meet: e["meet"],
-                              description: e["description"],
-                              files: e["files"],
-                              lat: e["lat"],
-                              lng: e["lng"],
-                              place: e["place"],
-                              variety: e["variety"],
-                            );
-                            Navigator.of(context).pushReplacementNamed(
-                                DeputeDetailScreen.routeName,
-                                arguments: depute);
-                          });
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  elevation: 4,
+                                  content: Text(
+                                    "Dziękujemy za dokonanie płatności. Twoje zlecenie obecnie znajduje się w zakładce zatwierdzone ogłoszenia",
+                                    style: Theme.of(context).textTheme.subhead,
+                                  ),
+                                  actions: [
+                                    FlatButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                                  "/",
+                                                  (Route<dynamic> route) =>
+                                                      false);
+                                        },
+                                        child: Text(
+                                          "Ok",
+                                          style:
+                                              Theme.of(context).textTheme.title,
+                                        ))
+                                  ],
+                                );
+                              });
                         });
                       },
                       child: Text(

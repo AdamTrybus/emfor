@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:new_emfor/providers/deputes.dart';
-import 'package:new_emfor/widgets/chat/confirm_window.dart';
-import 'package:new_emfor/widgets/chat/guarantee_window.dart';
-import 'package:new_emfor/widgets/depute/depute_detail_info.dart';
-import 'package:new_emfor/widgets/depute/depute_info.dart';
-import 'package:new_emfor/widgets/depute/renegotiate_window.dart';
-import 'package:new_emfor/widgets/depute/side_window.dart';
-import 'package:new_emfor/widgets/network_view.dart';
+import 'package:new_emfor/screens/questions_detail_screen.dart';
+import 'package:new_emfor/screens/questions_screen.dart';
+import 'package:new_emfor/widgets/rating_dialog.dart';
+import './providers/deputes.dart';
+import './screens/auth_screen.dart';
+import './screens/support_screen.dart';
+import './widgets/chat/confirm_window.dart';
+import './widgets/chat/guarantee_window.dart';
+import './widgets/depute/depute_detail_info.dart';
+import './widgets/depute/renegotiate_window.dart';
+import './widgets/depute/side_window.dart';
+import './widgets/image_view.dart';
 import './providers/read.dart';
 import './screens/depute_detail_screen.dart';
 import './screens/depute_screen.dart';
@@ -19,12 +23,12 @@ import './screens/notice_screen.dart';
 import './screens/overview_screen.dart';
 import './widgets/change_profile.dart';
 import './screens/subcategory_screen.dart';
+import './screens/profile_screen.dart';
 import './widgets/code_input.dart';
 import './widgets/personal_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './providers/work.dart';
 import 'package:provider/provider.dart';
-import './screens/auth_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -140,7 +144,12 @@ class MyApp extends StatelessWidget {
           DeputeDetailInfo.routeName: (ctx) => DeputeDetailInfo(),
           RenegotiateWindow.routeName: (ctx) => RenegotiateWindow(),
           SideWindow.routeName: (ctx) => SideWindow(),
-          NetworkView.routeName: (ctx) => NetworkView(),
+          SupportScreen.routeName: (ctx) => SupportScreen(),
+          ImageView.routeName: (ctx) => ImageView(),
+          QuestionsScreen.routeName: (ctx) => QuestionsScreen(),
+          QuestionsDetailScreen.routeName: (ctx) => QuestionsDetailScreen(),
+          ProfileScreen.routeName: (ctx) => ProfileScreen(),
+          RatingDialog.routeName: (ctx) => RatingDialog(),
         },
       ),
     );

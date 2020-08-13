@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/chat.dart';
+import 'package:new_emfor/screens/profile_screen.dart';
+import 'package:new_emfor/screens/questions_screen.dart';
 import 'package:new_emfor/widgets/chat/guarantee_widget.dart';
 import '../providers/read.dart';
 import 'package:provider/provider.dart';
@@ -52,15 +54,26 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
         resizeToAvoidBottomPadding: true,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: Text(
-            isLoading ? "" : name,
-            style: TextStyle(color: Colors.black),
+          title: FlatButton(
+            onPressed: isExpert
+                ? null
+                : () => Navigator.of(context)
+                    .pushNamed(ProfileScreen.routeName, arguments: phone),
+            child: Text(
+              isLoading ? "" : name,
+              style: TextStyle(color: Colors.black),
+            ),
           ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () => _onWillPop(),
           ),
           actions: [
+            IconButton(
+              icon: Icon(Icons.flag),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(QuestionsScreen.routeName),
+            ),
             IconButton(
               icon: Icon(Icons.more_horiz),
               onPressed: () {

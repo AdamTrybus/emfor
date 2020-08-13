@@ -43,10 +43,20 @@ class DeputeItem extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    depute.createdAt,
-                    style: Theme.of(context).textTheme.overline,
-                  ),
+                  child: depute.estimate != "5"
+                      ? Text(
+                          depute.createdAt,
+                          style: Theme.of(context).textTheme.overline,
+                        )
+                      : Text(
+                          "Odwołano",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.red,
+                            fontFamily: "Gotham",
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                 ),
                 Stack(
                   children: [

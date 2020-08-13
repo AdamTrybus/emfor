@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:new_emfor/widgets/display_file.dart';
 
 class MessageBubble extends StatelessWidget {
   MessageBubble(
@@ -10,52 +10,6 @@ class MessageBubble extends StatelessWidget {
   final String url;
   final String message;
   final bool isMe;
-
-  Widget exten(BuildContext context) {
-    var l = url.split(".").last.split("?").first;
-    var asset = "";
-    if (l == "jpg" || l == "jpeg" || l == "png") {
-      return InkWell(
-          onTap: () => launch(
-              url), //Navigator.of(context).pushNamed(NetworkView.routeName, arguments: url),
-          child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 16, vertical: 3),
-              constraints: BoxConstraints(
-                maxHeight: 200,
-                maxWidth: 200,
-              ),
-              child: Image.network(
-                url,
-                fit: BoxFit.cover,
-              )));
-    } else if (l == "pdf") {
-      asset = "pdf.png";
-    } else if (l == "tiff") {
-      asset = "tiff.png";
-    } else if (l == "doc") {
-      asset = "doc.png";
-    } else if (l == "txt") {
-      asset = "txt.png";
-    }
-    if (asset.isNotEmpty) {
-      return InkWell(
-        onTap: () => launch(
-            url), //Navigator.of(context).pushNamed(NetworkView.routeName, arguments: url),
-        child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 3),
-            constraints: BoxConstraints(
-              maxHeight: 50,
-              maxWidth: 30,
-            ),
-            child: Image.asset(
-              "assets/$asset",
-              fit: BoxFit.cover,
-            )),
-      );
-    } else {
-      return SizedBox();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +42,11 @@ class MessageBubble extends StatelessWidget {
               ),
             ),
           ),
-        if (url != null) exten(context)
+        if (url != null)
+          DisplayFile(
+            url,
+            chat: true,
+          ),
       ],
     );
   }

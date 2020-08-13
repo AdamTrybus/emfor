@@ -1,16 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:new_emfor/providers/depute.dart';
 import 'package:new_emfor/providers/deputes.dart';
 import 'package:new_emfor/providers/read.dart';
-import 'package:new_emfor/widgets/chat/guarantee_window.dart';
+import 'package:new_emfor/screens/support_screen.dart';
 import 'package:new_emfor/widgets/chat/message_bubble.dart';
 import 'package:new_emfor/widgets/chat/new_message.dart';
-import 'package:new_emfor/widgets/depute/depute_detail_info.dart';
 import 'package:new_emfor/widgets/depute/depute_info.dart';
-import 'package:new_emfor/widgets/depute/side_window.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../providers/notice.dart';
 import 'package:flutter/material.dart';
 
 class DeputeDetailScreen extends StatefulWidget {
@@ -60,6 +58,13 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
           icon: Icon(Icons.arrow_back),
           onPressed: () => _onWillPop(),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.more_horiz),
+            onPressed: () =>
+                Navigator.of(context).pushNamed(SupportScreen.routeName),
+          )
+        ],
       ),
       body: isLoading
           ? Center(
@@ -101,8 +106,8 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                   place: e["place"],
                   variety: e["variety"],
                 );
-                Provider.of<Deputes>(context, listen: false).setVal(
-                    depute, deputeSnapshot.data["side"] == phone, phone);
+                Provider.of<Deputes>(context, listen: false).setVal(depute,
+                    deputeSnapshot.data["side"] == phone, phone, isExpert);
                 if (depute.process == 6 &&
                     deputeSnapshot.data["side"] == phone) {
                   WidgetsBinding.instance
@@ -178,7 +183,7 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                     var chatDocs = chatSnapshot.data.documents ?? [];
                     return Column(
                       children: [
-                        DeputeInfo(),
+                        if (depute.estimate != "5") DeputeInfo(),
                         Expanded(
                           child: ListView.builder(
                             reverse: true,

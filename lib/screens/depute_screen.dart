@@ -46,6 +46,7 @@ class _DeputeScreenState extends State<DeputeScreen> {
                       isEqualTo: phone)
                   .where("process", isGreaterThanOrEqualTo: 4)
                   .orderBy("process", descending: true)
+                  .orderBy("createdAt", descending: true)
                   .snapshots(),
               builder: (ctx, deputeSnapshot) {
                 if (deputeSnapshot.connectionState == ConnectionState.waiting) {

@@ -107,12 +107,10 @@ class _DescriptionState extends State<Description> {
                     itemBuilder: (ctx, i) {
                       var l = files[i].path.split(".").last;
                       String asset = "";
-                      if (l == "jpg" || l == "jpeg") {
+                      if (l == "jpg" || l == "jpeg" || l == "png") {
                         asset = "jpg.png";
                       } else if (l == "pdf") {
                         asset = "pdf.png";
-                      } else if (l == "png") {
-                        asset = "png.png";
                       } else if (l == "tiff") {
                         asset = "tiff.png";
                       } else if (l == "doc") {

@@ -14,7 +14,7 @@ class ShadowSheet extends StatelessWidget {
         color: color,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey[500],
+            color: Colors.grey[350],
             spreadRadius: 0,
             blurRadius: 8,
             offset: Offset(2, 2),
@@ -23,22 +23,27 @@ class ShadowSheet extends StatelessWidget {
       ),
       child: Column(
         children: [
-          widget,
-          FlatButton(
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onPressed: () =>
-                Provider.of<Read>(context, listen: false).setExpanded(),
-            child: Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                width: 80,
-                child: Divider(
-                  thickness: 3,
-                ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Gwarancja usługi",
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
               ),
-            ),
+              GestureDetector(
+                  child: Icon(Provider.of<Read>(context).expanded
+                      ? Icons.expand_less
+                      : Icons.expand_more),
+                  onTap: () =>
+                      Provider.of<Read>(context, listen: false).setExpanded()),
+            ],
+          ),
+          SizedBox(
+            height: 4,
+          ),
+          widget,
+          SizedBox(
+            height: 6,
           ),
         ],
       ),

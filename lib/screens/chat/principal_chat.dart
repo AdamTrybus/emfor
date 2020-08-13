@@ -45,6 +45,8 @@ class _PrincipalChatState extends State<PrincipalChat> {
             stream: Firestore.instance
                 .collection("chat")
                 .where("principalPhone", isEqualTo: phone)
+                .where("process", isLessThan: 4)
+                .orderBy("process", descending: true)
                 .orderBy("createdAt", descending: true)
                 .snapshots(),
             builder: (context, snapshot) {

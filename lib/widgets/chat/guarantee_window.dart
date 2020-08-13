@@ -127,8 +127,8 @@ class _GuaranteeWindowState extends State<GuaranteeWindow> {
                         ),
                         keyboardType: TextInputType.number,
                         validator: (value) {
-                          if (value.isEmpty || double.parse(value) <= 0) {
-                            return 'Podaj cenę większą od zera';
+                          if (value.isEmpty || double.parse(value) <= 50) {
+                            return 'Podaj cenę większą od kwoty minimalnej (50zł)';
                           }
                           return null;
                         },
