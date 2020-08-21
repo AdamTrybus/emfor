@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:intl/intl.dart';
 import 'package:new_emfor/providers/depute.dart';
 
 import '../../screens/depute_detail_screen.dart';
@@ -43,9 +44,10 @@ class DeputeItem extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: depute.estimate != "5"
+                  child: !depute.cancel
                       ? Text(
-                          depute.createdAt,
+                          DateFormat("dd/MM/yyyy HH:mm")
+                              .format(DateTime.parse(depute.createdAt)),
                           style: Theme.of(context).textTheme.overline,
                         )
                       : Text(

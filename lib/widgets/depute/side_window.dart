@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:new_emfor/providers/depute.dart';
 import 'package:new_emfor/providers/deputes.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +14,7 @@ class SideWindow extends StatefulWidget {
 class _SideWindowState extends State<SideWindow> {
   String attentions, estimate, day, chatId;
   bool loading = true;
+  Depute depute;
 
   @override
   void initState() {
@@ -38,11 +41,17 @@ class _SideWindowState extends State<SideWindow> {
       "process": 6,
     };
     if (accept) {
+      var list = new List.from(depute.activity);
+      list.add({
+        "choice": 2,
+        "data": DateTime.now().toString(),
+      });
       map = {
         "process": 7,
         "estimate": estimate,
         "attentions": attentions,
-        "meet": day
+        "meet": day,
+        "activity": list
       };
     }
 
@@ -52,6 +61,7 @@ class _SideWindowState extends State<SideWindow> {
 
   @override
   Widget build(BuildContext context) {
+    depute = Provider.of<Deputes>(context).chosenDepute;
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: SafeArea(
@@ -111,7 +121,8 @@ class _SideWindowState extends State<SideWindow> {
                       height: 10,
                     ),
                     TextFormField(
-                      initialValue: day,
+                      initialValue:
+                          DateFormat("dd/MM/yyyy").format(DateTime.parse(day)),
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(12.0),
                         border: InputBorder.none,

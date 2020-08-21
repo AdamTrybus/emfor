@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:new_emfor/providers/chat.dart';
 import 'package:new_emfor/providers/depute.dart';
 import 'package:new_emfor/providers/deputes.dart';
@@ -22,7 +23,7 @@ class DeputeDetailInfo extends StatelessWidget {
       description: "${depute.description}\n${depute.attentions}",
       files: depute.files,
       place: depute.place,
-      time: depute.meet,
+      time: DateFormat("dd/MM/yyyy").format(DateTime.parse(depute.meet)),
       userPhone: depute.principalPhone,
       createdAt: depute.createdAt,
       userName: depute.principalName,

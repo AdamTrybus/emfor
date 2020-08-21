@@ -21,11 +21,9 @@ class Work with ChangeNotifier {
 
   void publish() async {
     var prefs = await SharedPreferences.getInstance();
-    DateTime now = DateTime.now();
-    var dateString = DateFormat.yMMMMd().format(now);
     notice.putIfAbsent("category", () => _category);
     notice.putIfAbsent("service", () => _subcategory);
-    notice.putIfAbsent("createdAt", () => dateString);
+    notice.putIfAbsent("createdAt", () => DateTime.now().toString());
     notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
     notice.putIfAbsent("userImage", () => prefs.getString("image"));
     notice.putIfAbsent("userName", () => prefs.getString("name"));

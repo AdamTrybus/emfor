@@ -19,7 +19,7 @@ class ChatScreenDetail extends StatefulWidget {
 class _ChatScreenDetailState extends State<ChatScreenDetail> {
   Chat chat;
   bool isLoading = true;
-  bool isExpert;
+  bool isExpert = false;
   String phone, name;
 
   @override

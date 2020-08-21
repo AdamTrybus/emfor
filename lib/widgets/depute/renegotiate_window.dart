@@ -19,6 +19,7 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
   bool rules = false, loading = true;
   TextEditingController _textController;
   String _selectedDate;
+  DateTime date;
   final _form = GlobalKey<FormState>();
 
   @override
@@ -34,7 +35,9 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
           .then((result) {
         estimate = result.data["estimate"];
         attentions = result.data["attentions"];
-        _selectedDate = result.data["meet"];
+        date = DateTime.parse(result.data["meet"]);
+        _selectedDate = DateFormat("dd/MM/yyyy")
+            .format(DateTime.parse(result.data["meet"]));
         setState(() {
           loading = false;
         });
@@ -53,7 +56,8 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
         return;
       }
       setState(() {
-        _selectedDate = DateFormat.yMd().format(pickedDate);
+        date = pickedDate;
+        _selectedDate = DateFormat("dd/MM/yyyy").format(pickedDate);
       });
     });
   }
@@ -254,7 +258,7 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
                               .collection("chat")
                               .document(depute.chatId)
                               .updateData({
-                            "new_meet": _selectedDate,
+                            "new_meet": date.toString(),
                             "new_estimate": estimate,
                             "new_attentions": attentions,
                             "side": phone,

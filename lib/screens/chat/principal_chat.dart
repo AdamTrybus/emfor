@@ -5,6 +5,7 @@ import 'package:new_emfor/providers/read.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../chat_detail_screen.dart';
+import 'package:intl/intl.dart';
 
 class PrincipalChat extends StatefulWidget {
   @override
@@ -111,7 +112,9 @@ class _PrincipalChatState extends State<PrincipalChat> {
                                       color: Colors.amber[500],
                                       padding: EdgeInsets.all(6),
                                       child: Text(
-                                        ids[i]["createdAt"],
+                                        DateFormat("dd/MM/yyyy HH:mm").format(
+                                            DateTime.parse(
+                                                ids[i]["createdAt"])),
                                         textAlign: TextAlign.end,
                                         style: TextStyle(
                                           fontSize: 12,

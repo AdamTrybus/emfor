@@ -21,6 +21,7 @@ class _GuaranteeWindowState extends State<GuaranteeWindow> {
   bool rules = false, loading = true;
   TextEditingController _textController;
   String _selectedDate;
+  DateTime date;
   final _form = GlobalKey<FormState>();
 
   @override
@@ -61,7 +62,8 @@ class _GuaranteeWindowState extends State<GuaranteeWindow> {
         return;
       }
       setState(() {
-        _selectedDate = DateFormat.yMd().format(pickedDate);
+        date = pickedDate;
+        _selectedDate = DateFormat("dd/MM/yyyy").format(pickedDate);
       });
     });
   }
@@ -262,7 +264,7 @@ class _GuaranteeWindowState extends State<GuaranteeWindow> {
                               .collection("chat")
                               .document(chat.chatId)
                               .updateData({
-                            "meet": _selectedDate,
+                            "meet": date.toString(),
                             "estimate": estimate,
                             "attentions": attentions,
                             "process": 1,

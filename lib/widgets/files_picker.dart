@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:toast/toast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -12,16 +12,51 @@ class FilesPicker extends StatefulWidget {
 }
 
 class _FilesPickerState extends State<FilesPicker> {
-  List<File> files = [];
-
   void _pickFiles() async {
-    var files1 = await FilePicker.getMultiFile(
-        type: FileType.custom,
-        allowedExtensions: ["tiff", "jpg", "jpeg", "doc", "pdf", "png", "txt"]);
-    setState(() {
-      files = files1;
-    });
-    widget.filesFn(files1);
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (ctx) {
+          return SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text("Aparat"),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    final pickedImageFile =
+                        await ImagePicker.pickImage(source: ImageSource.camera);
+                    List<File> f = [];
+                    f.add(pickedImageFile);
+                    widget.filesFn(f);
+                  },
+                ),
+                ListTile(
+                  title: Text("Zapisane"),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    var files1 = await FilePicker.getMultiFile(
+                        type: FileType.custom,
+                        allowedExtensions: [
+                          "tiff",
+                          "jpg",
+                          "jpeg",
+                          "doc",
+                          "pdf",
+                          "mp4",
+                          "mp3",
+                          "webm"
+                              "png",
+                          "txt"
+                        ]);
+                    widget.filesFn(files1);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   @override

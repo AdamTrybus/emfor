@@ -1,224 +1,116 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:new_emfor/screens/support_screen.dart';
-import 'package:new_emfor/widgets/rating_dialog.dart';
-import 'package:rating_bar/rating_bar.dart';
 import 'package:new_emfor/providers/depute.dart';
 import 'package:new_emfor/providers/deputes.dart';
-import 'package:new_emfor/widgets/depute/depute_detail_info.dart';
-import 'package:new_emfor/widgets/depute/renegotiate_window.dart';
+import 'package:new_emfor/widgets/depute/depute_timeline.dart';
 import 'package:new_emfor/widgets/depute/side_window.dart';
 import 'package:provider/provider.dart';
+import 'package:timeline_tile/timeline_tile.dart';
 
-class DeputeInfo extends StatefulWidget {
-  @override
-  _DeputeInfoState createState() => _DeputeInfoState();
-}
-
-class _DeputeInfoState extends State<DeputeInfo> {
+class DeputeInfo extends StatelessWidget {
   Depute depute;
-  bool isExpert;
-  Widget info(String text) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(2),
-          child: Icon(
-            Icons.stop,
-            size: 12,
-          ),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        Expanded(
-          child: Text(
-            text,
-            style: Theme.of(context).textTheme.overline,
-          ),
-        ),
-      ],
-    );
-  }
+  bool first = false, last = false;
+  String data, text;
 
-  Widget view() {
-    List<String> date = depute.meet.split("/").reversed.toList();
-    print(date);
-    var dt = DateTime.utc(
-        int.parse(date[0]), int.parse(date[1]), int.parse(date[2]));
-    print(dt);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 4,
-        ),
-        info(depute.noticeTitle),
-        SizedBox(
-          height: 1,
-        ),
-        info("${depute.estimate}zł"),
-        SizedBox(
-          height: 1,
-        ),
-        info(depute.meet),
-        SizedBox(
-          height: 1,
-        ),
-        info(depute.place),
-        SizedBox(
-          height: 3,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            FlatButton(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              child: Text(
-                "Przejrzyj",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pushNamed(DeputeDetailInfo.routeName);
-              },
-            ),
-            DateTime.now().isAfter(dt) && !isExpert
-                ? InkWell(
-                    child: Text(
-                      "Oceń usługę",
-                      style: TextStyle(
-                        color: Colors.amber[600],
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.of(context).pushNamed(RatingDialog.routeName,
-                          arguments: {
-                            "expertPhone": depute.expertPhone,
-                            "principalPhone": depute.principalPhone
-                          });
-                    })
-                : FlatButton(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    child: Text(
-                      "Edytuj",
-                      style: TextStyle(
-                        color: Colors.blueAccent,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(RenegotiateWindow.routeName);
-                    }),
-            DateTime.now().isAfter(dt)
-                ? FlatButton(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    child: Text(
-                      "Zgłoś problem",
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(SupportScreen.routeName);
-                    })
-                : FlatButton(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    child: Text(
-                      "Odwołaj",
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              elevation: 4,
-                              content: Text(
-                                "Czy pernamentnie chcesz anulować umowę?",
-                                style: Theme.of(context).textTheme.subhead,
-                              ),
-                              actions: [
-                                FlatButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    child: Text(
-                                      "Nie",
-                                      style: Theme.of(context).textTheme.title,
-                                    )),
-                                FlatButton(
-                                    onPressed: () {
-                                      Firestore.instance
-                                          .collection("chat")
-                                          .document(depute.chatId)
-                                          .updateData({
-                                        "estimate": "5",
-                                        "meet": "-",
-                                        "attentions": "-"
-                                      });
-                                    },
-                                    child: Text(
-                                      "Tak",
-                                      style: Theme.of(context).textTheme.title,
-                                    ))
-                              ],
-                            );
-                          });
-                    },
-                  ),
-          ],
-        ),
-        if (!Provider.of<Deputes>(context).side && depute.process == 5)
-          Column(
-            children: [
-              Divider(
-                thickness: 2,
-              ),
-              FlatButton(
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                onPressed: () {
-                  Navigator.of(context).pushNamed(SideWindow.routeName);
-                },
-                child: Text(
-                  "Sprawdź nową ofertę",
-                  style: Theme.of(context).textTheme.overline,
-                ),
-              )
-            ],
-          )
-      ],
-    );
+  void values(context) {
+    Map act = Provider.of<Deputes>(context, listen: false).currentActivity();
+    data = act["data"];
+    text = act["text"];
+    last = act["last"] ?? false;
+    first = act["first"] ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
     depute = Provider.of<Deputes>(context).chosenDepute;
-    isExpert = Provider.of<Deputes>(context).isExert;
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+    values(context);
+    return InkWell(
+      onTap: () => Navigator.of(context).pushNamed(DeputeTimeline.routeName),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
               color: Colors.grey,
-              offset: Offset(0.0, 1.0), //(x,y)
+              offset: Offset(0.0, 1.0),
               blurRadius: 6.0,
             ),
           ],
         ),
-        child: view());
+        child: Column(
+          children: [
+            TimelineTile(
+              alignment: TimelineAlign.left,
+              isFirst: first,
+              isLast: last,
+              indicatorStyle: const IndicatorStyle(
+                width: 20,
+                color: Colors.blue,
+                padding: EdgeInsets.all(6),
+              ),
+              rightChild: Container(
+                constraints: BoxConstraints(
+                  minHeight: 50,
+                ),
+                padding: EdgeInsets.only(left: 6, right: 6, top: 4, bottom: 2),
+                margin: EdgeInsets.symmetric(horizontal: 6, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey[300],
+                      spreadRadius: 0,
+                      blurRadius: 8,
+                      offset: Offset(2, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      text,
+                      style: Theme.of(context).textTheme.overline,
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(data,
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: "OpenSans")),
+                    )
+                  ],
+                ),
+              ),
+              topLineStyle: const LineStyle(
+                color: Colors.blue,
+              ),
+            ),
+            if (!Provider.of<Deputes>(context).side && depute.process == 5)
+              Column(
+                children: [
+                  Divider(
+                    thickness: 2,
+                  ),
+                  FlatButton(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(SideWindow.routeName);
+                    },
+                    child: Text(
+                      "Sprawdź nową ofertę",
+                      style: Theme.of(context).textTheme.overline,
+                    ),
+                  )
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }

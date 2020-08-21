@@ -6,6 +6,7 @@ import 'package:new_emfor/providers/read.dart';
 import 'package:new_emfor/screens/support_screen.dart';
 import 'package:new_emfor/widgets/chat/message_bubble.dart';
 import 'package:new_emfor/widgets/chat/new_message.dart';
+import 'package:new_emfor/widgets/depute/depute_drawer.dart';
 import 'package:new_emfor/widgets/depute/depute_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +22,8 @@ class DeputeDetailScreen extends StatefulWidget {
 class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
   Depute depute;
   String phone, name;
-  bool isLoading = true, isExpert;
+  bool isLoading = true, isExpert, supportRead = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -48,6 +50,8 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
   Widget build(BuildContext context) {
     depute = ModalRoute.of(context).settings.arguments;
     return Scaffold(
+      endDrawer: DeputeDrawer(),
+      key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
@@ -59,10 +63,33 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
           onPressed: () => _onWillPop(),
         ),
         actions: [
+          Stack(children: [
+            IconButton(
+              icon: Icon(Icons.flag),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(SupportScreen.routeName),
+            ),
+            !supportRead
+                ? Positioned(
+                    right: 6.5,
+                    top: 6.5,
+                    child: Container(
+                      padding: EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.amber[800],
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                    ),
+                  )
+                : SizedBox(),
+          ]),
           IconButton(
             icon: Icon(Icons.more_horiz),
-            onPressed: () =>
-                Navigator.of(context).pushNamed(SupportScreen.routeName),
+            onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
           )
         ],
       ),
@@ -105,37 +132,54 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                   lng: e["lng"],
                   place: e["place"],
                   variety: e["variety"],
+                  cancel: e["cancel"],
+                  problem: e["problem"] ?? false,
+                  activity: e["activity"] ?? [],
+                  supportExpertRead: e["supportExpertRead"] ?? true,
+                  supportPrincipalRead: e["supportPrincipalRead"] ?? true,
                 );
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  var val = isExpert
+                      ? depute.supportExpertRead
+                      : depute.supportPrincipalRead;
+                  if (supportRead != val) {
+                    setState(() {
+                      supportRead = val;
+                    });
+                  }
+                });
                 Provider.of<Deputes>(context, listen: false).setVal(depute,
                     deputeSnapshot.data["side"] == phone, phone, isExpert);
                 if (depute.process == 6 &&
                     deputeSnapshot.data["side"] == phone) {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((_) => showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              elevation: 4,
-                              content: Text(
-                                "Zmiana oferty została niezaakceptowana",
-                                style: Theme.of(context).textTheme.subhead,
-                              ),
-                              actions: [
-                                FlatButton(
-                                    onPressed: () {
-                                      Firestore.instance
-                                          .collection("chat")
-                                          .document(depute.chatId)
-                                          .updateData({"process": 4});
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      "Ok",
-                                      style: Theme.of(context).textTheme.title,
-                                    ))
-                              ],
-                            );
-                          }));
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          elevation: 4,
+                          content: Text(
+                            "Zmiana oferty została niezaakceptowana",
+                            style: Theme.of(context).textTheme.subhead,
+                          ),
+                          actions: [
+                            FlatButton(
+                                onPressed: () {
+                                  Firestore.instance
+                                      .collection("chat")
+                                      .document(depute.chatId)
+                                      .updateData({"process": 4});
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  "Ok",
+                                  style: Theme.of(context).textTheme.title,
+                                ))
+                          ],
+                        );
+                      },
+                    ),
+                  );
                 }
                 if (depute.process == 7 &&
                     deputeSnapshot.data["side"] == phone) {
@@ -183,7 +227,7 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                     var chatDocs = chatSnapshot.data.documents ?? [];
                     return Column(
                       children: [
-                        if (depute.estimate != "5") DeputeInfo(),
+                        DeputeInfo(),
                         Expanded(
                           child: ListView.builder(
                             reverse: true,

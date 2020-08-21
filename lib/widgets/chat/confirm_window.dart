@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:new_emfor/providers/chat.dart';
 import 'package:new_emfor/providers/read.dart';
 import 'package:new_emfor/screens/chat_detail_screen.dart';
@@ -28,7 +29,8 @@ class _ConfirmWindowState extends State<ConfirmWindow> {
           .then((result) {
         estimate = result.data["estimate"];
         attentions = result.data["attentions"];
-        day = result.data["meet"];
+        day = DateFormat("dd/MM/yyyy")
+            .format(DateTime.parse(result.data["meet"]));
         setState(() {
           loading = false;
         });

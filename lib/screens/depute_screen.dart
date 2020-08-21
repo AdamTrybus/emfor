@@ -81,6 +81,12 @@ class _DeputeScreenState extends State<DeputeScreen> {
                         lng: element["lng"],
                         place: element["place"],
                         variety: element["variety"],
+                        cancel: element["cancel"],
+                        problem: element["problem"] ?? false,
+                        activity: element["activity"] ?? [],
+                        supportExpertRead: element["supportExpertRead"] ?? true,
+                        supportPrincipalRead:
+                            element["supportPrincipalRead"] ?? true,
                       ),
                     );
                   },

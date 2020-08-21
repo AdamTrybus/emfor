@@ -518,6 +518,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.16"
+  timeline_tile:
+    dependency: "direct main"
+    description:
+      name: timeline_tile
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   toast:
     dependency: "direct main"
     description:
@@ -574,6 +581,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+  video_player:
+    dependency: "direct main"
+    description:
+      name: video_player
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.12"
+  video_player_platform_interface:
+    dependency: transitive
+    description:
+      name: video_player_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
+  video_player_web:
+    dependency: transitive
+    description:
+      name: video_player_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3+2"
   webview_flutter:
     dependency: "direct main"
     description:

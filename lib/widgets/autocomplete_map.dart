@@ -29,18 +29,13 @@ class _AutocompleteMapState extends State<AutocompleteMap> {
         final lng = detail.result.geometry.location.lng;
         coordinates = new Coordinates(lat, lng);
       }
-      // var addresses =
-      //     await Geocoder.local.findAddressesFromCoordinates(coordinates);
-      // var first = addresses.first;
-      // userLocation =
-      //     "${first.thoroughfare} ${first.subThoroughfare ?? ""}, ${first.locality}";
       Provider.of<Work>(context, listen: false)
           .setNotice("place", p.description);
+      userLocation = p.description;
       Provider.of<Work>(context, listen: false)
           .setNotice("lat", coordinates.latitude.toString());
       Provider.of<Work>(context, listen: false)
           .setNotice("lng", coordinates.longitude.toString());
-      print(userLocation);
     } catch (error) {
       return;
     }

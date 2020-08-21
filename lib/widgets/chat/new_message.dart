@@ -4,12 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:new_emfor/providers/read.dart';
 import 'package:provider/provider.dart';
 
 class NewMessage extends StatefulWidget {
   final String chatId, userPhone;
-  NewMessage(this.chatId, this.userPhone);
+  bool support;
+  NewMessage(this.chatId, this.userPhone, {this.support = false});
   @override
   _NewMessageState createState() => _NewMessageState();
 }
@@ -23,7 +25,7 @@ class _NewMessageState extends State<NewMessage> {
     _enteredMessage = "";
     FocusScope.of(context).unfocus();
     await Firestore.instance
-        .collection("chat")
+        .collection(widget.support ? "support" : "chat")
         .document(widget.chatId)
         .collection("messages")
         .add({
@@ -33,6 +35,24 @@ class _NewMessageState extends State<NewMessage> {
     });
     _controller.clear();
     Provider.of<Read>(context, listen: false).setNotRead();
+  }
+
+  void sendFile(File file) async {
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child(widget.chatId)
+        .child(file.path.replaceAll("/", ""));
+    await ref.putFile(file).onComplete;
+    var url = await ref.getDownloadURL();
+    await Firestore.instance
+        .collection(widget.support ? "support" : "chat")
+        .document(widget.chatId)
+        .collection("messages")
+        .add({
+      'file': url,
+      'createdAt': Timestamp.now(),
+      'userPhone': widget.userPhone,
+    });
   }
 
   @override
@@ -50,32 +70,48 @@ class _NewMessageState extends State<NewMessage> {
                 height: 40,
                 child: FloatingActionButton(
                   onPressed: () async {
-                    var file = await FilePicker.getFile(
-                        type: FileType.custom,
-                        allowedExtensions: [
-                          "tiff",
-                          "jpg",
-                          "jpeg",
-                          "doc",
-                          "pdf",
-                          "png",
-                          "txt"
-                        ]);
-                    final ref = FirebaseStorage.instance
-                        .ref()
-                        .child(widget.chatId)
-                        .child(file.path.replaceAll("/", ""));
-                    await ref.putFile(file).onComplete;
-                    var url = await ref.getDownloadURL();
-                    await Firestore.instance
-                        .collection("chat")
-                        .document(widget.chatId)
-                        .collection("messages")
-                        .add({
-                      'file': url,
-                      'createdAt': Timestamp.now(),
-                      'userPhone': widget.userPhone,
-                    });
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (ctx) {
+                          return SizedBox(
+                            height: 120,
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text("Aparat"),
+                                  onTap: () async {
+                                    Navigator.of(context).pop();
+                                    final file = await ImagePicker.pickImage(
+                                        source: ImageSource.camera);
+                                    sendFile(file);
+                                  },
+                                ),
+                                ListTile(
+                                  title: Text("Zapisane"),
+                                  onTap: () async {
+                                    Navigator.of(context).pop();
+                                    var file = await FilePicker.getFile(
+                                        type: FileType.custom,
+                                        allowedExtensions: [
+                                          "tiff",
+                                          "jpg",
+                                          "jpeg",
+                                          "doc",
+                                          "pdf",
+                                          "png",
+                                          "txt",
+                                          "mp4",
+                                          "webm",
+                                          "mp3"
+                                        ]);
+                                    sendFile(file);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        });
                   },
                   backgroundColor: Colors.amber,
                   child: Icon(

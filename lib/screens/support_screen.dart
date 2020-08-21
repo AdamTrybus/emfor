@@ -1,4 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:new_emfor/providers/depute.dart';
+import 'package:new_emfor/providers/deputes.dart';
+import 'package:new_emfor/widgets/chat/message_bubble.dart';
+import 'package:new_emfor/widgets/chat/new_message.dart';
+import 'package:new_emfor/widgets/support/problem_window.dart';
+import 'package:new_emfor/widgets/support/report_problem.dart';
+import 'package:provider/provider.dart';
 
 class SupportScreen extends StatefulWidget {
   static const String routeName = "support-screen";
@@ -7,84 +15,97 @@ class SupportScreen extends StatefulWidget {
 }
 
 class _SupportScreenState extends State<SupportScreen> {
-  Widget issueCard(String asset, String title, String subtitle) {
-    return Card(
-      elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Image.asset(
-              asset,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-            ),
-          ),
-          SizedBox(
-            width: 8,
-          ),
-          Flexible(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        fontFamily: "Medium",
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600),
-                    softWrap: true,
-                  ),
-                ),
-                SizedBox(height: 6),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    subtitle,
-                    style: TextStyle(
-                        fontFamily: "Quicksand",
-                        fontSize: 14,
-                        fontWeight: FontWeight.w300),
-                    softWrap: true,
-                  ),
-                )
-              ],
-            ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-        ],
-      ),
-    );
+  Depute depute;
+  String phone;
+  bool loading = true;
+
+  @override
+  void _onWillPop() {
+    bool expert = Provider.of<Deputes>(context, listen: false).isExpert;
+    var string = expert ? "supportExpertRead" : "supportPrincipalRead";
+    Firestore.instance
+        .collection("chat")
+        .document(depute.chatId)
+        .updateData({string: true});
+    Navigator.of(context).pop();
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(microseconds: 0)).then((value) async {
+      depute = Provider.of<Deputes>(context, listen: false).chosenDepute;
+      phone = Provider.of<Deputes>(context, listen: false).phone;
+      if (!depute.problem) {
+        Navigator.of(context).pushNamed(ReportProblem.routeName);
+      }
+      setState(() {
+        loading = false;
+      });
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-          children: [
-            Text(
-              "Co się stało ?",
-              style: Theme.of(context).textTheme.headline,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            issueCard("assets/timeout.png", "Zlecenie nie zostało wykonane",
-                "Wykonawca nie przyjechał / nie podjął się zadania"),
-            issueCard("assets/leak_pipe.png", "Usterka przy pracy",
-                "Praca nie została w pełni dobrze wykonane"),
-            issueCard("assets/other_problem.png", "Inny problem",
-                "Zgłoś problem, który nie został wymieniony powyżej"),
-          ],
-        ),
+      resizeToAvoidBottomPadding: true,
+      appBar: AppBar(
+        title: Text("Support"),
+        leading:
+            IconButton(icon: Icon(Icons.arrow_back), onPressed: _onWillPop),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.table_chart),
+            onPressed: () =>
+                Navigator.of(context).pushNamed(ProblemWindow.routeName),
+          )
+        ],
+      ),
+      body: WillPopScope(
+        onWillPop: () {
+          _onWillPop();
+          return Future.value(true);
+        },
+        child: loading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : StreamBuilder(
+                stream: Firestore.instance
+                    .collection("support")
+                    .document("${depute.chatId}-$phone")
+                    .collection("messages")
+                    .orderBy("createdAt", descending: true)
+                    .snapshots(),
+                builder: (ctx, chatSnapshot) {
+                  if (chatSnapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  var chatDocs = chatSnapshot.data.documents ?? [];
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          reverse: true,
+                          shrinkWrap: true,
+                          itemCount: chatDocs.length,
+                          itemBuilder: (ctx, index) => MessageBubble(
+                            chatDocs[index]["file"],
+                            chatDocs[index]["text"],
+                            chatDocs[index]["userPhone"] == phone,
+                          ),
+                        ),
+                      ),
+                      NewMessage(
+                        depute.chatId,
+                        phone,
+                        support: true,
+                      ),
+                    ],
+                  );
+                },
+              ),
       ),
     );
   }
