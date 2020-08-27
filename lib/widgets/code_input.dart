@@ -39,21 +39,23 @@ class _CodeInputState extends State<CodeInput> {
         if (user.user != null) {
           Firestore.instance
               .collection("users")
-              .document(phone)
-              .get()
+              .where("phone", isEqualTo: phone)
+              .getDocuments()
               .then((value) async {
-            if (value.exists) {
+            if (value.documents.isNotEmpty) {
+              var f = value.documents.first;
               var prefs = await SharedPreferences.getInstance();
               prefs.setString("phone", phone);
-              prefs.setString("gmail", value.data["gmail"]);
-              prefs.setString("name", value.data["name"]);
-              prefs.setBool("expert", value.data["expert"]);
-              prefs.setString("imageUrl", value.data["imageUrl"]);
+              prefs.setString("uid", f["uid"]);
+              prefs.setString("gmail", f["gmail"]);
+              prefs.setString("name", f["name"]);
+              prefs.setBool("expert", f["expert"]);
+              prefs.setString("imageUrl", f["imageUrl"]);
               Navigator.of(context).pushNamedAndRemoveUntil(
                   "/", (Route<dynamic> route) => false);
             } else {
               Navigator.of(context).pushReplacementNamed(PersonalInfo.routeName,
-                  arguments: phone);
+                  arguments: user.user);
             }
           });
         } else {
@@ -191,6 +193,7 @@ class _CodeInputState extends State<CodeInput> {
                         onChanged: (value) => code = value,
                         textInputType: TextInputType.number,
                         animationType: AnimationType.fade,
+                        autoFocus: true,
                         pinTheme: PinTheme(
                           borderRadius: BorderRadius.circular(10),
                           borderWidth: 2,

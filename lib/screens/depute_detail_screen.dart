@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:intl/intl.dart';
 import 'package:new_emfor/providers/depute.dart';
 import 'package:new_emfor/providers/deputes.dart';
 import 'package:new_emfor/providers/read.dart';
+import 'package:new_emfor/screens/profile_screen.dart';
 import 'package:new_emfor/screens/support_screen.dart';
 import 'package:new_emfor/widgets/chat/message_bubble.dart';
 import 'package:new_emfor/widgets/chat/new_message.dart';
@@ -21,20 +23,22 @@ class DeputeDetailScreen extends StatefulWidget {
 
 class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
   Depute depute;
-  String phone, name;
-  bool isLoading = true, isExpert, supportRead = true;
+  String uid, name = "", deputeId;
+  bool isLoading = true, isExpert = true, supportRead = true, cancel = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) async {
+      deputeId = ModalRoute.of(context).settings.arguments;
       var prefs = await SharedPreferences.getInstance();
-      phone = prefs.getString("phone");
-      isExpert = phone == depute.expertPhone;
-      name = isExpert ? depute.principalName : depute.expertName;
-      Provider.of<Read>(context, listen: false)
-          .setVal(depute.chatId, phone == depute.expertPhone);
+      uid = prefs.getString("uid");
+      var pushUp = prefs.getBool("pushUp") ?? true;
+      if (pushUp) {
+        final fbm = FirebaseMessaging();
+        fbm.subscribeToTopic(deputeId);
+      }
       setState(() {
         isLoading = false;
       });
@@ -48,15 +52,21 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    depute = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       endDrawer: DeputeDrawer(),
+      resizeToAvoidBottomPadding: true,
       key: _scaffoldKey,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text(
-          isLoading ? "" : name,
-          style: TextStyle(color: Colors.black),
+        title: FlatButton(
+          onPressed: isExpert
+              ? null
+              : () => Navigator.of(context)
+                  .pushNamed(ProfileScreen.routeName, arguments: uid),
+          child: Text(
+            name,
+            style: TextStyle(color: Colors.black),
+          ),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -66,8 +76,11 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
           Stack(children: [
             IconButton(
               icon: Icon(Icons.flag),
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(SupportScreen.routeName),
+              onPressed: () => Navigator.of(context)
+                  .pushNamed(SupportScreen.routeName, arguments: {
+                "supportId": deputeId,
+                "problem": depute.problem
+              }),
             ),
             !supportRead
                 ? Positioned(
@@ -87,10 +100,11 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                   )
                 : SizedBox(),
           ]),
-          IconButton(
-            icon: Icon(Icons.more_horiz),
-            onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
-          )
+          if (!cancel)
+            IconButton(
+              icon: Icon(Icons.more_horiz),
+              onPressed: () => _scaffoldKey.currentState.openEndDrawer(),
+            )
         ],
       ),
       body: isLoading
@@ -100,7 +114,7 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
           : StreamBuilder(
               stream: Firestore.instance
                   .collection("chat")
-                  .document(depute.chatId)
+                  .document(deputeId)
                   .snapshots(),
               builder: (ctx, deputeSnapshot) {
                 if (deputeSnapshot.connectionState == ConnectionState.waiting) {
@@ -115,8 +129,8 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                   expertName: e["expertName"],
                   noticeTitle: e["noticeTitle"],
                   noticeId: e["noticeId"],
-                  expertPhone: e["expertPhone"],
-                  principalPhone: e["principalPhone"],
+                  expertUid: e["expertUid"],
+                  principalUid: e["principalUid"],
                   createdAt: e["createdAt"],
                   expertRead: e["expertRead"],
                   principalImage: e["principalImage"],
@@ -138,6 +152,18 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                   supportExpertRead: e["supportExpertRead"] ?? true,
                   supportPrincipalRead: e["supportPrincipalRead"] ?? true,
                 );
+                isExpert = uid == depute.expertUid;
+                cancel = depute.cancel;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (name == "") {
+                    setState(() {
+                      name =
+                          isExpert ? depute.principalName : depute.expertName;
+                    });
+                  }
+                });
+                Provider.of<Read>(context, listen: false)
+                    .setVal(depute.chatId, uid == depute.expertUid);
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   var val = isExpert
                       ? depute.supportExpertRead
@@ -148,10 +174,9 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                     });
                   }
                 });
-                Provider.of<Deputes>(context, listen: false).setVal(depute,
-                    deputeSnapshot.data["side"] == phone, phone, isExpert);
-                if (depute.process == 6 &&
-                    deputeSnapshot.data["side"] == phone) {
+                Provider.of<Deputes>(context, listen: false).setVal(
+                    depute, deputeSnapshot.data["side"] == uid, uid, isExpert);
+                if (depute.process == 6 && deputeSnapshot.data["side"] == uid) {
                   WidgetsBinding.instance.addPostFrameCallback(
                     (_) => showDialog(
                       context: context,
@@ -181,8 +206,7 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                     ),
                   );
                 }
-                if (depute.process == 7 &&
-                    deputeSnapshot.data["side"] == phone) {
+                if (depute.process == 7 && deputeSnapshot.data["side"] == uid) {
                   WidgetsBinding.instance
                       .addPostFrameCallback((_) => showDialog(
                           context: context,
@@ -235,11 +259,15 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                             itemBuilder: (ctx, index) => MessageBubble(
                               chatDocs[index]["file"],
                               chatDocs[index]["text"],
-                              chatDocs[index]["userPhone"] == phone,
+                              chatDocs[index]["userUid"] == uid,
                             ),
                           ),
                         ),
-                        NewMessage(depute.chatId, phone),
+                        NewMessage(
+                            depute.chatId,
+                            uid,
+                            isExpert ? depute.expertName : depute.principalName,
+                            "depute"),
                       ],
                     );
                   },

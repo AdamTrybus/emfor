@@ -4,17 +4,17 @@ import 'package:new_emfor/providers/depute.dart';
 
 class Deputes with ChangeNotifier {
   Depute _chosenDepute;
-  String _phone;
+  String _uid;
   bool side;
   bool isExpert;
-  String get phone {
-    return _phone;
+  String get uid {
+    return _uid;
   }
 
-  void setVal(Depute d, bool s, String p, bool i) {
+  void setVal(Depute d, bool s, String u, bool i) {
     _chosenDepute = d;
     side = s;
-    _phone = p;
+    _uid = u;
     isExpert = i;
   }
 
@@ -106,13 +106,13 @@ class Deputes with ChangeNotifier {
       var d = DateFormat("dd/MM/yyyy HH:mm").parse(element["data"]);
       var b = DateFormat("dd/MM/yyyy HH:mm").parse(current["data"]);
       bool before = d.isBefore(DateTime.now());
-      bool after = d.isAfter(b);
+      bool after = !d.isBefore(b);
       if (before && after) {
-        var map = element;
+        Map<String, dynamic> map = element;
         if (i == 0) {
-          map.putIfAbsent("first", () => true);
+          map = {...map, "first": true};
         } else if (i == activities.length - 1) {
-          map.putIfAbsent("last", () => true);
+          map = {...map, "last": true};
         }
         current = map;
       }

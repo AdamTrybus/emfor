@@ -4,25 +4,31 @@ class MyButton extends StatelessWidget {
   final String text;
   final Color textColor, backgroundColor;
   final Function onPressed;
+  final double horizontalPadding;
 
-  const MyButton(
-      {this.text, this.textColor, this.backgroundColor, this.onPressed});
+  const MyButton({
+    this.text = "Dalej",
+    this.textColor = Colors.white,
+    this.backgroundColor = Colors.black,
+    this.onPressed,
+    this.horizontalPadding = 25,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 60,
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 25),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       child: RaisedButton(
         onPressed: onPressed ?? () {},
-        color: backgroundColor ?? Colors.black,
+        color: backgroundColor,
         elevation: 4,
         child: Text(
-          text ?? "Dalej",
+          text,
           style: TextStyle(
             fontFamily: "Quicksand",
-            color: textColor ?? Colors.white,
+            color: textColor,
             fontSize: 32,
             fontWeight: FontWeight.w700,
           ),

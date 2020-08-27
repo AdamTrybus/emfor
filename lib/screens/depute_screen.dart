@@ -14,14 +14,14 @@ class DeputeScreen extends StatefulWidget {
 
 class _DeputeScreenState extends State<DeputeScreen> {
   List<Depute> chats = [];
-  String phone = "";
+  String uid = "";
   var isLoading = true, expert;
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) async {
       var prefs = await SharedPreferences.getInstance();
-      phone = prefs.getString("phone");
+      uid = prefs.getString("uid");
       expert = prefs.getBool("expert");
       setState(() {
         isLoading = false;
@@ -42,8 +42,7 @@ class _DeputeScreenState extends State<DeputeScreen> {
           : StreamBuilder(
               stream: Firestore.instance
                   .collection("chat")
-                  .where(expert ? "expertPhone" : "principalPhone",
-                      isEqualTo: phone)
+                  .where(expert ? "expertUid" : "principalUid", isEqualTo: uid)
                   .where("process", isGreaterThanOrEqualTo: 4)
                   .orderBy("process", descending: true)
                   .orderBy("createdAt", descending: true)
@@ -64,8 +63,8 @@ class _DeputeScreenState extends State<DeputeScreen> {
                         expertName: element["expertName"],
                         noticeTitle: element["noticeTitle"],
                         noticeId: element["noticeId"],
-                        expertPhone: element["expertPhone"],
-                        principalPhone: element["principalPhone"],
+                        expertUid: element["expertUid"],
+                        principalUid: element["principalUid"],
                         createdAt: element["createdAt"],
                         expertRead: element["expertRead"],
                         principalImage: element["principalImage"],
@@ -95,7 +94,7 @@ class _DeputeScreenState extends State<DeputeScreen> {
                   itemCount: chats.length,
                   shrinkWrap: true,
                   itemBuilder: (ctx, i) =>
-                      DeputeItem(chats[i], phone == chats[i].expertPhone),
+                      DeputeItem(chats[i], uid == chats[i].expertUid),
                 );
               },
             ),

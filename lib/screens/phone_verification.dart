@@ -75,8 +75,6 @@ class _PhoneVerificationState extends State<PhoneVerification> {
                 inputDecoration: InputDecoration(
                     errorText:
                         submitted ? "Nieprawidłowy numer telefonu" : null,
-                    // fillColor: Colors.grey[200],
-                    // filled: true,
                     focusedBorder: UnderlineInputBorder(
                         borderSide:
                             BorderSide(color: Colors.black, width: 1.6)),

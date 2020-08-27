@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:new_emfor/widgets/network_video.dart';
 import 'package:new_emfor/widgets/image_view.dart';
+import 'package:new_emfor/widgets/preview_video.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DisplayFile extends StatelessWidget {
@@ -24,24 +25,9 @@ class DisplayFile extends StatelessWidget {
                 height: chat ? 200 : 80,
               )));
     } else if (l == "mp4" || l == "webm" || l == "mp3") {
-      return InkWell(
-        onTap: () => Navigator.of(context)
-            .pushNamed(NetworkVideo.routeName, arguments: url),
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          width: 80,
-          height: 60,
-          decoration: BoxDecoration(
-            border: Border.all(width: 3.0),
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          ),
-          child: Center(
-            child: Icon(
-              Icons.play_circle_outline,
-              size: 36,
-            ),
-          ),
-        ),
+      return PreviewVideo(
+        chat: chat,
+        url: url,
       );
     } else if (l == "pdf") {
       asset = "pdf.png";

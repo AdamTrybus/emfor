@@ -68,7 +68,7 @@ class DeputeItem extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pushNamed(
                               DeputeDetailScreen.routeName,
-                              arguments: depute);
+                              arguments: depute.chatId);
                         },
                         child: Text(
                           "Czat",

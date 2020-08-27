@@ -1,6 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/screens/chat/expert_chat.dart';
+import 'package:new_emfor/screens/depute_detail_screen.dart';
 import 'package:new_emfor/screens/depute_screen.dart';
+import 'package:new_emfor/screens/chat_detail_screen.dart';
+import 'package:new_emfor/screens/support_screen.dart';
 import '../screens/chat/principal_chat.dart';
 import '../screens/home_screen.dart';
 import '../screens/notice_screen.dart';
@@ -47,9 +51,37 @@ class _OverviewScreenState extends State<OverviewScreen> {
     });
   }
 
+  void navigateToScreen(msg) {
+    print("msg $msg");
+    print("data ${msg["data"]}");
+    var respository = msg["data"]["respository"] as String;
+    var id = msg["data"]["chatId"] as String;
+    if (respository == "chat") {
+      Navigator.of(context)
+          .pushNamed(ChatScreenDetail.routeName, arguments: id);
+    } else if (respository == "depute") {
+      Navigator.of(context)
+          .pushNamed(DeputeDetailScreen.routeName, arguments: id);
+    } else if (respository == "support") {
+      Navigator.of(context).pushNamed(SupportScreen.routeName,
+          arguments: {"supportId": id, "problem": true});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    final fbm = FirebaseMessaging();
+    fbm.requestNotificationPermissions();
+    fbm.configure(onMessage: (msg) {
+      print("msg $msg");
+      print("data ${msg["data"]}");
+      return;
+    }, onLaunch: (msg) {
+      navigateToScreen(msg);
+    }, onResume: (msg) {
+      navigateToScreen(msg);
+    });
   }
 
   @override

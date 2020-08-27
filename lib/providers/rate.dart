@@ -1,16 +1,16 @@
 class Rate {
-  final String phone;
-  final String image;
+  final String uid;
+  final String imageUrl;
   final String name;
   final String comment;
   final String createdAt;
-  final double mark;
+  final double rate;
 
   Rate(
-      {this.phone,
-      this.image,
+      {this.uid,
+      this.imageUrl,
       this.name,
       this.comment,
-      this.mark,
+      this.rate,
       this.createdAt});
 }

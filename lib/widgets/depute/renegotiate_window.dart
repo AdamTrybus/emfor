@@ -14,7 +14,7 @@ class RenegotiateWindow extends StatefulWidget {
 }
 
 class _RenegotiateWindowState extends State<RenegotiateWindow> {
-  String attentions, estimate, phone;
+  String attentions, estimate, uid;
   Depute depute;
   bool rules = false, loading = true;
   TextEditingController _textController;
@@ -27,7 +27,7 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
     super.initState();
     Future.delayed(Duration()).then((value) async {
       depute = Provider.of<Deputes>(context, listen: false).chosenDepute;
-      phone = Provider.of<Deputes>(context, listen: false).phone;
+      uid = Provider.of<Deputes>(context, listen: false).uid;
       await Firestore.instance
           .collection("chat")
           .document(depute.chatId)
@@ -261,7 +261,7 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
                             "new_meet": date.toString(),
                             "new_estimate": estimate,
                             "new_attentions": attentions,
-                            "side": phone,
+                            "side": uid,
                             "process": 5,
                           });
                           Navigator.pop(context);

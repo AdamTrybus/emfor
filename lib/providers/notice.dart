@@ -8,7 +8,7 @@ class Notice {
   final List<dynamic> files;
   final String time;
   final String place;
-  final String userPhone;
+  final String userUid;
   final String createdAt;
   final String userName;
   final String userImage;
@@ -25,7 +25,7 @@ class Notice {
     @required this.time,
     @required this.files,
     @required this.place,
-    @required this.userPhone,
+    @required this.userUid,
     @required this.createdAt,
     @required this.userName,
     @required this.userImage,

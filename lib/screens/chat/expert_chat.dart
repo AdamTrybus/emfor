@@ -12,7 +12,7 @@ class ExpertChat extends StatefulWidget {
 }
 
 class _ExpertChatState extends State<ExpertChat> {
-  var phone;
+  var uid;
   final ids = [];
   var isLoading = true;
   @override
@@ -20,7 +20,7 @@ class _ExpertChatState extends State<ExpertChat> {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) async {
       var prefs = await SharedPreferences.getInstance();
-      phone = prefs.getString("phone");
+      uid = prefs.getString("uid");
       setState(() {
         isLoading = false;
       });
@@ -36,7 +36,7 @@ class _ExpertChatState extends State<ExpertChat> {
         : StreamBuilder(
             stream: Firestore.instance
                 .collection("chat")
-                .where("expertPhone", isEqualTo: phone)
+                .where("expertUid", isEqualTo: uid)
                 .where("process", isLessThan: 4)
                 .orderBy("process", descending: true)
                 .orderBy("createdAt", descending: true)
@@ -55,8 +55,8 @@ class _ExpertChatState extends State<ExpertChat> {
                   expertName: element["expertName"],
                   noticeTitle: element["noticeTitle"],
                   noticeId: element["noticeId"],
-                  expertPhone: element["expertPhone"],
-                  principalPhone: element["principalPhone"],
+                  expertUid: element["expertUid"],
+                  principalUid: element["principalUid"],
                   createdAt: element["createdAt"],
                   expertRead: element["expertRead"],
                   principalImage: element["principalImage"],
@@ -114,13 +114,9 @@ class _ExpertChatState extends State<ExpertChat> {
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: RaisedButton(
                                     onPressed: () {
-                                      Provider.of<Read>(context, listen: false)
-                                          .setValues(
-                                        chat: chatDocs[i],
-                                        isExpert: true,
-                                      );
                                       Navigator.of(context).pushNamed(
-                                          ChatScreenDetail.routeName);
+                                          ChatScreenDetail.routeName,
+                                          arguments: chatDocs[i].chatId);
                                     },
                                     child: Text(
                                       "Czat",

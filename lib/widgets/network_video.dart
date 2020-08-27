@@ -28,6 +28,7 @@ class _NetworkVideoState extends State<NetworkVideo> {
       });
       _controller.setLooping(true);
       _controller.initialize();
+      _controller.play();
       setState(() {
         loading = false;
       });

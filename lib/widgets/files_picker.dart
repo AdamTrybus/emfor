@@ -46,8 +46,8 @@ class _FilesPickerState extends State<FilesPicker> {
                           "pdf",
                           "mp4",
                           "mp3",
-                          "webm"
-                              "png",
+                          "webm",
+                          "png",
                           "txt"
                         ]);
                     widget.filesFn(files1);

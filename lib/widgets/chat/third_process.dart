@@ -64,7 +64,7 @@ class ThirdProcess extends StatelessWidget {
                                             files: notice["files"],
                                             place: notice["place"],
                                             time: notice["time"],
-                                            userPhone: notice["userPhone"],
+                                            userUid: notice["userUid"],
                                             createdAt: notice["createdAt"],
                                             userName: notice["userName"],
                                             userImage: notice["userImage"],

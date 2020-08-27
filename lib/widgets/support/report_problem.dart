@@ -53,11 +53,11 @@ class _ReportProblemState extends State<ReportProblem> {
     }
     var depute = Provider.of<Deputes>(context, listen: false).chosenDepute;
     List<String> fs = [];
-    var phone = Provider.of<Deputes>(context, listen: false).phone;
+    var uid = Provider.of<Deputes>(context, listen: false).uid;
     await Future.forEach(files, (File file) async {
       final ref = FirebaseStorage.instance
           .ref()
-          .child(phone)
+          .child(uid)
           .child("support")
           .child(file.path.replaceAll("/", ""));
       await ref.putFile(file).onComplete;
@@ -66,7 +66,7 @@ class _ReportProblemState extends State<ReportProblem> {
     });
 
     Firestore.instance.collection("support").document(depute.chatId).setData({
-      "notifier": phone,
+      "notifier": uid,
       "files": fs,
       "description": description,
       "problem": problem,
@@ -79,9 +79,8 @@ class _ReportProblemState extends State<ReportProblem> {
     Firestore.instance.collection("chat").document(depute.chatId).updateData({
       "activity": list,
       "problem": true,
-      "side": phone,
+      "side": uid,
     });
-
     Navigator.of(context).pop();
   }
 

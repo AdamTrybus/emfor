@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/chat.dart';
 import 'package:new_emfor/screens/profile_screen.dart';
@@ -20,17 +21,20 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
   Chat chat;
   bool isLoading = true;
   bool isExpert = false;
-  String phone, name;
+  String uid, chatId, name = "";
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) async {
       var prefs = await SharedPreferences.getInstance();
-      phone = prefs.getString("phone");
-      chat = Provider.of<Read>(context, listen: false).chat;
-      isExpert = phone == chat.expertPhone;
-      name = isExpert ? chat.principalName : chat.expertName;
+      uid = prefs.getString("uid");
+      chatId = ModalRoute.of(context).settings.arguments;
+      var pushUp = prefs.getBool("pushUp") ?? true;
+      if (pushUp) {
+        final fbm = FirebaseMessaging();
+        fbm.subscribeToTopic(chatId);
+      }
       setState(() {
         isLoading = false;
       });
@@ -58,7 +62,7 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
             onPressed: isExpert
                 ? null
                 : () => Navigator.of(context)
-                    .pushNamed(ProfileScreen.routeName, arguments: phone),
+                    .pushNamed(ProfileScreen.routeName, arguments: uid),
             child: Text(
               isLoading ? "" : name,
               style: TextStyle(color: Colors.black),
@@ -121,7 +125,7 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
             : StreamBuilder(
                 stream: Firestore.instance
                     .collection("chat")
-                    .document(chat.chatId)
+                    .document(chatId)
                     .snapshots(),
                 builder: (ctx, chatSnapshot) {
                   if (chatSnapshot.connectionState == ConnectionState.waiting) {
@@ -129,7 +133,32 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  chat.process = chatSnapshot.data["process"];
+                  var element = chatSnapshot.data;
+                  chat = Chat(
+                    chatId: element.documentID,
+                    expertImage: element["expertImage"],
+                    expertName: element["expertName"],
+                    noticeTitle: element["noticeTitle"],
+                    noticeId: element["noticeId"],
+                    expertUid: element["expertUid"],
+                    principalUid: element["principalUid"],
+                    createdAt: element["createdAt"],
+                    expertRead: element["expertRead"],
+                    principalImage: element["principalImage"],
+                    principalName: element["principalName"],
+                    principalRead: element["principalRead"],
+                    process: element["process"],
+                  );
+                  isExpert = uid == chat.expertUid;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (name == "") {
+                      setState(() {
+                        name = isExpert ? chat.principalName : chat.expertName;
+                      });
+                    }
+                  });
+                  Provider.of<Read>(context, listen: false)
+                      .setValues(chat: chat, isExpert: isExpert);
                   return StreamBuilder(
                     stream: Firestore.instance
                         .collection("chat")
@@ -148,7 +177,7 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
                       return Column(
                         children: [
                           GuaranteeWidget(
-                              chat.process, chat.principalPhone == phone),
+                              chat.process, chat.principalUid == uid),
                           Expanded(
                             child: ListView.builder(
                               reverse: true,
@@ -156,11 +185,15 @@ class _ChatScreenDetailState extends State<ChatScreenDetail> {
                               itemBuilder: (ctx, index) => MessageBubble(
                                 chatDocs[index]["file"],
                                 chatDocs[index]["text"],
-                                chatDocs[index]["userPhone"] == phone,
+                                chatDocs[index]["userUid"] == uid,
                               ),
                             ),
                           ),
-                          NewMessage(chat.chatId, phone),
+                          NewMessage(
+                              chat.chatId,
+                              uid,
+                              isExpert ? chat.expertName : chat.principalName,
+                              "chat"),
                         ],
                       );
                     },

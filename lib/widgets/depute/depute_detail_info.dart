@@ -24,7 +24,7 @@ class DeputeDetailInfo extends StatelessWidget {
       files: depute.files,
       place: depute.place,
       time: DateFormat("dd/MM/yyyy").format(DateTime.parse(depute.meet)),
-      userPhone: depute.principalPhone,
+      userUid: depute.principalUid,
       createdAt: depute.createdAt,
       userName: depute.principalName,
       userImage: depute.principalImage,

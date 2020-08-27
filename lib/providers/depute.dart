@@ -6,8 +6,8 @@ class Depute {
   final String expertName;
   final String noticeTitle;
   final String noticeId;
-  final String expertPhone;
-  final String principalPhone;
+  final String expertUid;
+  final String principalUid;
   final String createdAt;
   final bool expertRead;
   final bool supportExpertRead;
@@ -46,8 +46,8 @@ class Depute {
     @required this.expertName,
     @required this.noticeTitle,
     @required this.noticeId,
-    @required this.expertPhone,
-    @required this.principalPhone,
+    @required this.expertUid,
+    @required this.principalUid,
     @required this.createdAt,
     @required this.expertRead,
     @required this.principalImage,

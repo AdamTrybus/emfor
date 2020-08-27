@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart' as syspaths;
 import '../widgets/button.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PersonalInfo extends StatefulWidget {
   static const routeName = "/personal-info";
@@ -63,15 +63,19 @@ class _PersonalInfoState extends State<PersonalInfo>
       return;
     }
     _form.currentState.save();
-    var phone = ModalRoute.of(context).settings.arguments;
+    var user = ModalRoute.of(context).settings.arguments as FirebaseUser;
+    var phone = user.phoneNumber;
+    var uid = user.uid;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("uid", uid);
     prefs.setString("phone", phone);
     prefs.setString("gmail", gmail.trim());
     prefs.setString("name", name.trim());
     prefs.setBool("expert", switched);
     final databaseReference = Firestore.instance;
     var map = {
+      "uid": uid,
       'phone': phone,
       'gmail': gmail.trim(),
       'name': name.trim(),
@@ -80,7 +84,7 @@ class _PersonalInfoState extends State<PersonalInfo>
     var url;
     if (imageFile != null) {
       final ref =
-          FirebaseStorage.instance.ref().child(phone).child("userImage.jpg");
+          FirebaseStorage.instance.ref().child(uid).child("userImage.jpg");
       await ref.putFile(imageFile).onComplete;
       url = await ref.getDownloadURL();
       prefs.setString("image", url);
@@ -95,7 +99,7 @@ class _PersonalInfoState extends State<PersonalInfo>
       await Future.forEach(files, (File file) async {
         final ref = FirebaseStorage.instance
             .ref()
-            .child(prefs.getString("phone"))
+            .child(uid)
             .child("documents")
             .child(file.path.replaceAll("/", ""));
         await ref.putFile(file).onComplete;
@@ -104,7 +108,7 @@ class _PersonalInfoState extends State<PersonalInfo>
       });
       if (fs.isNotEmpty) map.putIfAbsent("files", () => fs);
     }
-    await databaseReference.collection("users").document(phone).setData(map);
+    await databaseReference.collection("users").document(uid).setData(map);
     Navigator.of(context)
         .pushNamedAndRemoveUntil("/", (Route<dynamic> route) => false);
   }
@@ -142,6 +146,7 @@ class _PersonalInfoState extends State<PersonalInfo>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(6.0), // here the desired height
           child: TabBar(
@@ -374,14 +379,21 @@ class _PersonalInfoState extends State<PersonalInfo>
                                   physics: NeverScrollableScrollPhysics(),
                                   itemCount: files.length,
                                   itemBuilder: (ctx, i) {
-                                    var l = files[i].path.split(".").last;
+                                    var l = files[i]
+                                        .path
+                                        .toString()
+                                        .split(".")
+                                        .last
+                                        .split("?")
+                                        .first;
+                                    print(l);
                                     String asset = "";
-                                    if (l == "jpg" || l == "jpeg") {
+                                    if (l == "jpg" ||
+                                        l == "jpeg" ||
+                                        l == "png") {
                                       asset = "jpg.png";
                                     } else if (l == "pdf") {
                                       asset = "pdf.png";
-                                    } else if (l == "png") {
-                                      asset = "png.png";
                                     } else if (l == "tiff") {
                                       asset = "tiff.png";
                                     } else if (l == "doc") {

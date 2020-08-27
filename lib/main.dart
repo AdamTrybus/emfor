@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:new_emfor/screens/feedback_screen.dart';
+import 'package:new_emfor/screens/filter_screen.dart';
 import 'package:new_emfor/screens/questions_detail_screen.dart';
 import 'package:new_emfor/screens/questions_screen.dart';
 import 'package:new_emfor/widgets/depute/depute_timeline.dart';
 import 'package:new_emfor/widgets/network_video.dart';
+import 'package:new_emfor/widgets/profile/enter_code.dart';
+import 'package:new_emfor/widgets/profile/verify_phone.dart';
 import 'package:new_emfor/widgets/support/problem_window.dart';
 import 'package:new_emfor/widgets/rating_dialog.dart';
 import 'package:new_emfor/widgets/support/report_problem.dart';
@@ -158,6 +162,10 @@ class MyApp extends StatelessWidget {
           ProblemWindow.routeName: (ctx) => ProblemWindow(),
           ReportProblem.routeName: (ctx) => ReportProblem(),
           NetworkVideo.routeName: (ctx) => NetworkVideo(),
+          FeedbackScreen.routeName: (ctx) => FeedbackScreen(),
+          FilterScreen.routeName: (ctx) => FilterScreen(),
+          VerifyPhone.routeName: (ctx) => VerifyPhone(),
+          EnterCode.routeName: (ctx) => EnterCode(),
         },
       ),
     );

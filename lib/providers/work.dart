@@ -24,7 +24,7 @@ class Work with ChangeNotifier {
     notice.putIfAbsent("category", () => _category);
     notice.putIfAbsent("service", () => _subcategory);
     notice.putIfAbsent("createdAt", () => DateTime.now().toString());
-    notice.putIfAbsent("userPhone", () => prefs.getString("phone"));
+    notice.putIfAbsent("userUid", () => prefs.getString("uid"));
     notice.putIfAbsent("userImage", () => prefs.getString("image"));
     notice.putIfAbsent("userName", () => prefs.getString("name"));
     var map = {"variety": choices, ...notice};

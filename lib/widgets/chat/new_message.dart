@@ -9,9 +9,10 @@ import 'package:new_emfor/providers/read.dart';
 import 'package:provider/provider.dart';
 
 class NewMessage extends StatefulWidget {
-  final String chatId, userPhone;
+  final String chatId, userUid, userName, respository;
   bool support;
-  NewMessage(this.chatId, this.userPhone, {this.support = false});
+  NewMessage(this.chatId, this.userUid, this.userName, this.respository,
+      {this.support = false});
   @override
   _NewMessageState createState() => _NewMessageState();
 }
@@ -31,7 +32,10 @@ class _NewMessageState extends State<NewMessage> {
         .add({
       'text': text,
       'createdAt': Timestamp.now(),
-      'userPhone': widget.userPhone,
+      'userUid': widget.userUid,
+      "userName": widget.userName,
+      "topic": widget.chatId.replaceAll("+", ""),
+      "respository": widget.respository,
     });
     _controller.clear();
     Provider.of<Read>(context, listen: false).setNotRead();
@@ -51,7 +55,10 @@ class _NewMessageState extends State<NewMessage> {
         .add({
       'file': url,
       'createdAt': Timestamp.now(),
-      'userPhone': widget.userPhone,
+      'userUid': widget.userUid,
+      "userName": widget.userName,
+      "topic": widget.chatId.replaceAll("+", ""),
+      "respository": widget.respository,
     });
   }
 
@@ -122,7 +129,7 @@ class _NewMessageState extends State<NewMessage> {
               Expanded(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 8),
-                  height: 45,
+                  constraints: BoxConstraints(minHeight: 45),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.rectangle,
@@ -136,8 +143,11 @@ class _NewMessageState extends State<NewMessage> {
                   ),
                   child: TextFormField(
                     controller: _controller,
+                    minLines: 1,
+                    maxLines: 3,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(12),
+                      isDense: true,
                       hintText: 'Wyślij wiadomość..',
                       border: InputBorder.none,
                       suffixIcon: IconButton(

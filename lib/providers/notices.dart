@@ -21,7 +21,6 @@ class Notices with ChangeNotifier {
         .then((QuerySnapshot snapshot) {
       snapshot.documents.forEach((f) {
         dynamic notice = f.data;
-        //if(notice["phone" == phone])return ;
         _items.add(Notice(
           id: f.documentID,
           service: notice["service"],
@@ -30,7 +29,7 @@ class Notices with ChangeNotifier {
           files: notice["files"] ?? [],
           place: notice["place"],
           time: notice["time"],
-          userPhone: notice["userPhone"],
+          userUid: notice["userUid"],
           createdAt: notice["createdAt"],
           userName: notice["userName"],
           userImage: notice["userImage"],

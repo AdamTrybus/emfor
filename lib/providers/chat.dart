@@ -4,8 +4,8 @@ class Chat {
   final String expertName;
   final String noticeTitle;
   final String noticeId;
-  final String expertPhone;
-  final String principalPhone;
+  final String expertUid;
+  final String principalUid;
   final String createdAt;
   final bool expertRead;
   final String principalImage;
@@ -19,8 +19,8 @@ class Chat {
     this.expertName,
     this.noticeTitle,
     this.noticeId,
-    this.expertPhone,
-    this.principalPhone,
+    this.expertUid,
+    this.principalUid,
     this.createdAt,
     this.expertRead,
     this.principalImage,

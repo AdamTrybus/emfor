@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/depute.dart';
 import 'package:new_emfor/providers/deputes.dart';
@@ -7,6 +8,7 @@ import 'package:new_emfor/widgets/chat/new_message.dart';
 import 'package:new_emfor/widgets/support/problem_window.dart';
 import 'package:new_emfor/widgets/support/report_problem.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SupportScreen extends StatefulWidget {
   static const String routeName = "support-screen";
@@ -15,17 +17,16 @@ class SupportScreen extends StatefulWidget {
 }
 
 class _SupportScreenState extends State<SupportScreen> {
-  Depute depute;
-  String phone;
-  bool loading = true;
+  String uid, supportId, name;
+  bool loading = true, isExpert;
 
   @override
   void _onWillPop() {
-    bool expert = Provider.of<Deputes>(context, listen: false).isExpert;
+    bool expert = isExpert;
     var string = expert ? "supportExpertRead" : "supportPrincipalRead";
     Firestore.instance
         .collection("chat")
-        .document(depute.chatId)
+        .document(supportId)
         .updateData({string: true});
     Navigator.of(context).pop();
   }
@@ -34,9 +35,16 @@ class _SupportScreenState extends State<SupportScreen> {
   void initState() {
     super.initState();
     Future.delayed(Duration(microseconds: 0)).then((value) async {
-      depute = Provider.of<Deputes>(context, listen: false).chosenDepute;
-      phone = Provider.of<Deputes>(context, listen: false).phone;
-      if (!depute.problem) {
+      var map = ModalRoute.of(context).settings.arguments as Map;
+      supportId = map["supportId"];
+      bool problem = map["problem"];
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      uid = prefs.getString("uid");
+      isExpert = prefs.getBool("expert");
+      name = prefs.getString("name");
+      final fbm = FirebaseMessaging();
+      fbm.subscribeToTopic(supportId.replaceAll("+", ""));
+      if (!problem) {
         Navigator.of(context).pushNamed(ReportProblem.routeName);
       }
       setState(() {
@@ -72,7 +80,7 @@ class _SupportScreenState extends State<SupportScreen> {
             : StreamBuilder(
                 stream: Firestore.instance
                     .collection("support")
-                    .document("${depute.chatId}-$phone")
+                    .document(supportId)
                     .collection("messages")
                     .orderBy("createdAt", descending: true)
                     .snapshots(),
@@ -93,13 +101,15 @@ class _SupportScreenState extends State<SupportScreen> {
                           itemBuilder: (ctx, index) => MessageBubble(
                             chatDocs[index]["file"],
                             chatDocs[index]["text"],
-                            chatDocs[index]["userPhone"] == phone,
+                            chatDocs[index]["userUid"] == uid,
                           ),
                         ),
                       ),
                       NewMessage(
-                        depute.chatId,
-                        phone,
+                        supportId,
+                        uid,
+                        name,
+                        "support",
                         support: true,
                       ),
                     ],
