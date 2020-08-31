@@ -1,12 +1,85 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:new_emfor/providers/notice.dart';
 import 'package:new_emfor/providers/read.dart';
 import 'package:new_emfor/widgets/chat/shadow_sheet.dart';
+import 'package:new_emfor/widgets/chat/payu_chat_widget.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
-class ThirdProcess extends StatelessWidget {
+class ThirdProcess extends StatefulWidget {
+  @override
+  _ThirdProcessState createState() => _ThirdProcessState();
+}
+
+class _ThirdProcessState extends State<ThirdProcess> {
   bool exp;
+
+  void directToPayu() async {
+    final ProgressDialog pr = ProgressDialog(context);
+    await pr.show();
+    var chat = Provider.of<Read>(context, listen: false).chat;
+    var estimate = "";
+    await Firestore.instance
+        .collection("chat")
+        .document(chat.chatId)
+        .get()
+        .then((result) {
+      estimate = result.data["estimate"];
+    });
+    final user = await FirebaseAuth.instance.currentUser();
+    final idToken = await user.getIdToken();
+    final authToken = idToken.token;
+    final fbm = FirebaseMessaging();
+    final prefs = await SharedPreferences.getInstance();
+    var uid = prefs.getString("uid");
+    fbm.subscribeToTopic(uid);
+    //     "https://firestore.googleapis.com/v1/projects/emfor-add82/databases/(default)/documents/payments?key=AIzaSyCP70Z4SAFkDc8XroaMUNde1oaCgvzEH9o";
+    var url =
+        'https://emfor-add82.firebaseio.com/users/T6xsVXyAv8MwSXQF4H2yCkHXJvc2.json?auth=$authToken';
+    final response = await http.post(
+      "https://secure.snd.payu.com/api/v2_1/orders",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer d9a4536e-62ba-4f60-8017-6053211d3f47",
+      },
+      body: json.encode({
+        "notifyUrl": url,
+        "customerIp": "127.0.0.1",
+        "merchantPosId": "300746",
+        "description": uid,
+        "currencyCode": "PLN",
+        "totalAmount": "${estimate}00",
+        "buyer": {
+          "email": prefs.getString("gmail"),
+          "phone": prefs.getString("phone"),
+          "firstName": prefs.getString("name"),
+          "lastName": "",
+          "language": "pl",
+        },
+        "settings": {"invoiceDisabled": "true"},
+        "products": [
+          {
+            "name": "Emfor - ${chat.noticeTitle}",
+            "unitPrice": "${estimate}00",
+            "quantity": "1"
+          },
+        ]
+      }),
+    );
+    Map map = json.decode(response.body);
+    print(response.body);
+    await pr.hide();
+    Navigator.of(context)
+        .pushNamed(PayuChatWidget.routeName, arguments: map["redirectUri"]);
+  }
+
   @override
   Widget build(BuildContext context) {
     exp = Provider.of<Read>(context).expanded;
@@ -32,89 +105,7 @@ class ThirdProcess extends StatelessWidget {
                   children: [
                     Expanded(child: SizedBox()),
                     GestureDetector(
-                      onTap: () {
-                        showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (BuildContext c) {
-                              return AlertDialog(
-                                elevation: 4,
-                                content: Text(
-                                  "Dziękujemy za dokonanie płatności. Twoje zlecenie obecnie znajduje się w zakładce zatwierdzone ogłoszenia",
-                                  style: Theme.of(context).textTheme.subhead,
-                                ),
-                                actions: [
-                                  FlatButton(
-                                      onPressed: () {
-                                        var chat = Provider.of<Read>(context,
-                                                listen: false)
-                                            .chat;
-                                        Firestore.instance
-                                            .collection("notices")
-                                            .document(chat.noticeId)
-                                            .get()
-                                            .then((value) async {
-                                          dynamic notice = value.data;
-                                          var n = Notice(
-                                            id: value.documentID,
-                                            service: notice["service"],
-                                            variety: notice["variety"],
-                                            description:
-                                                notice["description"] ?? "",
-                                            files: notice["files"],
-                                            place: notice["place"],
-                                            time: notice["time"],
-                                            userUid: notice["userUid"],
-                                            createdAt: notice["createdAt"],
-                                            userName: notice["userName"],
-                                            userImage: notice["userImage"],
-                                            lat: notice["lat"],
-                                            lng: notice["lng"],
-                                          );
-                                          await Firestore.instance
-                                              .collection("chat")
-                                              .document(chat.chatId)
-                                              .updateData({
-                                            "createdAt":
-                                                DateTime.now().toString(),
-                                            "process": 4,
-                                            "description": n.description,
-                                            "lat": n.lat,
-                                            "lng": n.lng,
-                                            "place": n.place,
-                                            "variety": n.variety,
-                                            "files": n.files,
-                                            "cancel": false,
-                                          });
-                                          Firestore.instance
-                                              .collection("notices")
-                                              .document(value.documentID)
-                                              .delete();
-                                          Firestore.instance
-                                              .collection("chat")
-                                              .where("noticeId",
-                                                  isEqualTo: value.documentID)
-                                              .where("process", isLessThan: 4)
-                                              .getDocuments()
-                                              .then((value) {
-                                            for (DocumentSnapshot doc
-                                                in value.documents) {
-                                              doc.reference.delete();
-                                            }
-                                          });
-                                        });
-                                        Navigator.of(c).pushNamedAndRemoveUntil(
-                                            "/",
-                                            (Route<dynamic> route) => false);
-                                      },
-                                      child: Text(
-                                        "Ok",
-                                        style: Theme.of(c).textTheme.title,
-                                      ))
-                                ],
-                              );
-                            });
-                      },
+                      onTap: () => directToPayu,
                       child: Text(
                         "Dokonaj płatności",
                         style: TextStyle(

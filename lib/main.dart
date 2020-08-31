@@ -4,7 +4,9 @@ import 'package:new_emfor/screens/filter_screen.dart';
 import 'package:new_emfor/screens/questions_detail_screen.dart';
 import 'package:new_emfor/screens/questions_screen.dart';
 import 'package:new_emfor/widgets/depute/depute_timeline.dart';
+import 'package:new_emfor/widgets/depute/payu_depute_widget.dart';
 import 'package:new_emfor/widgets/network_video.dart';
+import 'package:new_emfor/widgets/chat/payu_chat_widget.dart';
 import 'package:new_emfor/widgets/profile/enter_code.dart';
 import 'package:new_emfor/widgets/profile/verify_phone.dart';
 import 'package:new_emfor/widgets/support/problem_window.dart';
@@ -166,6 +168,8 @@ class MyApp extends StatelessWidget {
           FilterScreen.routeName: (ctx) => FilterScreen(),
           VerifyPhone.routeName: (ctx) => VerifyPhone(),
           EnterCode.routeName: (ctx) => EnterCode(),
+          PayuChatWidget.routeName: (ctx) => PayuChatWidget(),
+          PayuDeputeWidget.routeName: (ctx) => PayuDeputeWidget(),
         },
       ),
     );

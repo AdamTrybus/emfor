@@ -10,6 +10,7 @@ import 'package:new_emfor/widgets/chat/message_bubble.dart';
 import 'package:new_emfor/widgets/chat/new_message.dart';
 import 'package:new_emfor/widgets/depute/depute_drawer.dart';
 import 'package:new_emfor/widgets/depute/depute_info.dart';
+import 'package:new_emfor/widgets/depute/payu_depute_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -205,34 +206,6 @@ class _DeputeDetailScreenState extends State<DeputeDetailScreen> {
                       },
                     ),
                   );
-                }
-                if (depute.process == 7 && deputeSnapshot.data["side"] == uid) {
-                  WidgetsBinding.instance
-                      .addPostFrameCallback((_) => showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              elevation: 4,
-                              content: Text(
-                                "Zmiana oferty została zaakceptowana",
-                                style: Theme.of(context).textTheme.subhead,
-                              ),
-                              actions: [
-                                FlatButton(
-                                    onPressed: () {
-                                      Firestore.instance
-                                          .collection("chat")
-                                          .document(depute.chatId)
-                                          .updateData({"process": 4});
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      "Ok",
-                                      style: Theme.of(context).textTheme.title,
-                                    ))
-                              ],
-                            );
-                          }));
                 }
                 return StreamBuilder(
                   stream: Firestore.instance

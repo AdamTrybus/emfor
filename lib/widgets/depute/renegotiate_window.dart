@@ -81,9 +81,7 @@ class _RenegotiateWindowState extends State<RenegotiateWindow> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: FloatingActionButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
+                          onPressed: () => Navigator.of(context).pop(),
                           child: Icon(
                             Icons.arrow_back,
                             size: 50,

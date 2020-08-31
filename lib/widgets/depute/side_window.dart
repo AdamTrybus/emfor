@@ -41,20 +41,10 @@ class _SideWindowState extends State<SideWindow> {
       "process": 6,
     };
     if (accept) {
-      var list = new List.from(depute.activity);
-      list.add({
-        "choice": 2,
-        "data": DateTime.now().toString(),
-      });
       map = {
         "process": 7,
-        "estimate": estimate,
-        "attentions": attentions,
-        "meet": day,
-        "activity": list
       };
     }
-
     Firestore.instance.collection("chat").document(chatId).updateData(map);
     Navigator.of(context).pop();
   }
