@@ -1,6 +1,6 @@
 # new_emfor
 
-A new Flutter project.
+Flutter Project with Firebase
 
 ## Getting Started
 
